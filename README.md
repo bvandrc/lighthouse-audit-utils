@@ -1,12 +1,11 @@
-# lighthouse-log-recommendations
+# lighthouse-audit-utils
 
-Prints the same fix list the Lighthouse report UI shows — failing audits, their
-estimated savings, and the individual offending URLs/nodes — straight to the
-terminal, so a failing CI run is actionable from the log without downloading and
-opening the HTML report.
+Everything you'd do with a finished Lighthouse run, in one call: write the
+reports to disk, print the fix list to the terminal, and fail the run if a
+category scored below its threshold. Each step can be configured or disabled.
 
 ```bash
-npm install --save-dev lighthouse-log-recommendations
+npm install --save-dev lighthouse-audit-utils
 ```
 
 `lighthouse` is a peer dependency (used for its types).
@@ -14,54 +13,84 @@ npm install --save-dev lighthouse-log-recommendations
 ## Usage
 
 ```ts
-import { logRecommendations } from 'lighthouse-log-recommendations'
+import lighthouse from 'lighthouse'
+import { handleAuditResult } from 'lighthouse-audit-utils'
 
-logRecommendations({
-  lhr, // the `lhr` object from a Lighthouse run
+const result = await lighthouse(url, { port, output: ['html', 'json'] })
+if (!result) throw new Error('Lighthouse returned no result')
+
+await handleAuditResult({
+  result,
+  reports: { directory: 'lighthouse', name: 'desktop' },
+  thresholds: { performance: 90 },
 })
 ```
 
-### Options
+The three steps run in that order — reports, recommendations, thresholds — so a
+failing run still prints its fix list before throwing.
 
-| Option           | Default    | Description                                                    |
-| ---------------- | ---------- | -------------------------------------------------------------- |
-| `lhr`            | _required_ | The Lighthouse result object                                   |
-| `label`          | _none_     | Distinguishes runs of the same URL, e.g. `desktop`/`mobile`    |
-| `maxItems`       | `5`        | Rows shown per audit before collapsing to "…and N more"        |
-| `maxValueLength` | `120`      | Max length of a single value before it's truncated with an "…" |
+| Option            | Default    | Description                                                  |
+| ----------------- | ---------- | ------------------------------------------------------------ |
+| `result`          | _required_ | The full `RunnerResult` from a Lighthouse run                |
+| `reports`         | _none_     | Where to write the reports; omit to skip writing them        |
+| `recommendations` | _none_     | Recommendation logging options, or `false` to skip                  |
+| `thresholds`      | `100`      | Minimum scores (0-100) — one number for all, or per category |
+| `ignoreError`     | `false`    | Return the threshold failures rather than throwing on them              |
 
-## Example: Playwright
-
-With [`playwright-lighthouse`](https://github.com/abhinaba-ghosh/playwright-lighthouse),
-pass `ignoreError: true` so a failed threshold doesn't throw before the report is
-returned — re-throw it after logging instead.
 
 ```ts
-import path from 'node:path'
-import { playAudit } from 'playwright-lighthouse'
+// just the log
+await handleAuditResult({ result, ignoreError: true })
 
-import { logRecommendations } from 'lighthouse-log-recommendations'
-
-const directory = testInfo.outputPath('lighthouse')
-
-const { lhr, comparisonError } = await playAudit({
-  page,
-  port,
-  thresholds: { performance: 100 },
-  reports: { formats: { html: true }, directory, name: 'desktop' },
-  // ignoreError so the recommendations still print when a threshold fails (playAudit otherwise throws before returning the report)
-  ignoreError: true,
-})
-
-logRecommendations({ lhr, label: 'desktop' })
-
-if (comparisonError) throw new Error(comparisonError)
+// just the thresholds
+await handleAuditResult({ result, recommendations: false })
 ```
 
-## Output
+### `reports`
 
-Audits are grouped by category and sorted by estimated savings, so the biggest
-wins come first:
+| Option      | Default    | Description                                                    |
+| ----------- | ---------- | -------------------------------------------------------------- |
+| `directory` | _required_ | Directory to write into; created if it doesn't exist           |
+| `name`      | _required_ | Base filename, e.g. `desktop` → `desktop.html`, `desktop.json` |
+
+Each report is written to `<directory>/<name>.<format>`, using the formats the
+run's `output` flag asked for.
+
+### `thresholds`
+
+One number applies to every category; an object sets them individually. Any
+category you leave out has to score 100, so the strict case is the default:
+
+```ts
+await handleAuditResult({ result }) // every category must score 100
+await handleAuditResult({ result, thresholds: 90 })
+await handleAuditResult({ result, thresholds: { performance: 90 } })
+```
+
+Only the categories present that are scored in the lighthouse report are checked.
+
+### `ignoreError`
+
+Returns the threshold failures instead of throwing an error, so you can decide what to do with
+them. `undefined` when everything passed.
+
+### `recommendations`
+
+| Option           | Default        | Description                                                    |
+| ---------------- | -------------- | -------------------------------------------------------------- |
+| `label`          | `reports.name` | Distinguishes runs of the same URL, e.g. `desktop`/`mobile`    |
+| `maxItems`       | `5`            | Rows shown per audit before collapsing to "…and N more"        |
+| `maxValueLength` | `120`          | Max length of a single value before it's truncated with an "…" |
+
+Pass `recommendations: false` to skip the log entirely.
+
+#### Output
+
+The log is the same fix list the report UI shows — failing audits, their
+estimated savings, and the individual offending URLs/nodes — so a failing CI run
+is actionable without downloading and opening the HTML report. Audits are
+grouped by category and sorted by estimated savings, so the biggest wins come
+first:
 
 ```
 ───── Lighthouse recommendations: desktop — https://example.com/ ─────
@@ -83,6 +112,40 @@ Performance: 87
         - https://example.com/assets/index.css  ·  Transfer Size: 12.4 KiB  ·  Duration: 52 ms
 
 Accessibility: 100 — nothing to fix
+```
+
+## Example: Playwright
+
+Lighthouse navigates over the CDP port itself, so launch a persistent context on
+that port and point `lighthouse` at it.
+
+```ts
+import lighthouse, { desktopConfig } from 'lighthouse'
+import { handleAuditResult } from 'lighthouse-audit-utils'
+
+const result = await lighthouse(
+  page.url(),
+  { port, output: ['html', 'json'] },
+  desktopConfig
+)
+if (!result) throw new Error('Lighthouse returned no result')
+
+await handleAuditResult({
+  result,
+  reports: { directory: testInfo.outputPath('lighthouse'), name: 'desktop' },
+  thresholds: { performance: 90 },
+})
+```
+
+## Individual utilities
+
+The three steps are also exported on their own, each taking the report first and
+its options second:
+
+```ts
+writeReports(result, { directory, name })
+logRecommendations(lhr, { label, maxItems, maxValueLength })
+checkAgainstThresholds(lhr, { thresholds, ignoreError })
 ```
 
 ## Development

@@ -1,7 +1,7 @@
 {
-  "name": "lighthouse-log-recommendations",
+  "name": "lighthouse-audit-utils",
   "version": "1.0.0",
-  "description": "Print the Lighthouse report's fix list to the terminal, so a failing run is actionable from CI logs without opening the HTML report.",
+  "description": "Small utilities for driving Lighthouse audits yourself: check scores against thresholds, write reports to disk, and log the fix list to the terminal.",
   "keywords": [
     "lighthouse",
     "playwright",
@@ -11,7 +11,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/bvandrc/lighthouse-log-recommendations"
+    "url": "https://github.com/bvandrc/lighthouse-audit-utils"
   },
   "author": {
     "name": "Blake Vandercar",
