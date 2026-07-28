@@ -1,0 +1,12 @@
+// Declaration-only emit — tsup builds the JS, but its `dts` step relies on
+// TypeScript APIs that v7 no longer exposes, so `tsc` emits the types instead.
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "declaration": true,
+    "emitDeclarationOnly": true
+  },
+  "include": ["./src"]
+}
