@@ -1,0 +1,59 @@
+{
+  "name": "lighthouse-log-recommendations",
+  "version": "1.0.0",
+  "description": "Print the Lighthouse report's fix list to the terminal, so a failing run is actionable from CI logs without opening the HTML report.",
+  "keywords": [
+    "lighthouse",
+    "playwright",
+    "performance",
+    "ci",
+    "terminal"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bvandrc/lighthouse-log-recommendations"
+  },
+  "author": {
+    "name": "Blake Vandercar",
+    "email": "bvandercar@outlook.com"
+  },
+  "license": "MIT",
+  "type": "module",
+  "source": "src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "LICENSE",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "packageManager": "pnpm@11.9.0",
+  "scripts": {
+    "__c0": "====================[ Build & Development ]======================",
+    "prepack": "pnpm build",
+    "build": "tsup-node && pnpm build:types",
+    "build:types": "tsc -p tsconfig.build.json",
+    "start": "tsup-node --watch",
+    "__c1": "====================[ Linting & Type Checking ]==================",
+    "check": "npx biome check . && pnpm ts:check",
+    "format": "npx biome check . --fix",
+    "ts:check": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "lighthouse": "^12 || ^13"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2",
+    "@types/node": "^24",
+    "lighthouse": "^13",
+    "tsup": "^8",
+    "typescript": "^7"
+  }
+}
