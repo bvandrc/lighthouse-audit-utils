@@ -15,13 +15,13 @@ importers:
         specifier: ^24
         version: 24.13.3
       lighthouse:
-        specifier: ^13.4.1
+        specifier: ^13
         version: 13.4.1(@opentelemetry/core@2.10.0(@opentelemetry/api@1.9.1))(yauzl@2.10.0)
       tsup:
         specifier: ^8
         version: 8.5.1(postcss@8.5.23)(typescript@7.0.2)
       typescript:
-        specifier: ^7.0.2
+        specifier: ^7
         version: 7.0.2
 
 packages:

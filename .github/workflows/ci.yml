@@ -42,7 +42,7 @@ jobs:
             ${{ runner.os }}-pnpm-
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile && pnpm add -D lighthouse@${{ matrix.lighthouse-version }} --no-frozen-lockfile
+        run: pnpm install --frozen-lockfile && pnpm add -D lighthouse@${{ matrix.lighthouse-version }}
 
       - name: Check package.json key order
         uses: bvandrc/lint-package-json@v1
