@@ -8,9 +8,38 @@ category scored below its threshold. Each step can be configured or disabled.
 npm install --save-dev lighthouse-audit-utils
 ```
 
-`lighthouse` is a peer dependency (used for its types).
+`lighthouse` is a peer dependency.
 
 ## Usage
+
+`runAudit` audits a URL and handles the result:
+
+```ts
+import { runAudit } from 'lighthouse-audit-utils'
+
+await runAudit({
+  lighthouseArgs: {
+    url: 'https://example.com',
+    flags: { port, output: ['html', 'json'] },
+  },
+  reports: { directory: 'lighthouse', name: 'desktop' },
+  thresholds: { performance: 90 },
+})
+```
+
+`lighthouseArgs` is handed to `lighthouse()`, in the order it takes them:
+
+| Option   | Default    | Description                                           |
+| -------- | ---------- | ----------------------------------------------------- |
+| `url`    | _required_ | The URL to audit                                      |
+| `flags`  | _none_     | Settings for the run, e.g. the `port` Lighthouse uses |
+| `config` | _none_     | Overrides the default config, e.g. `desktopConfig`    |
+
+Everything else it takes is passed straight to `handleAuditResult` below, which returns `{ result, failures }`.
+
+## `handleAuditResult`
+
+Handles a run you've already made yourself — this is what `runAudit` calls with the result from the actual `lighthouse()` audit:
 
 ```ts
 import lighthouse from 'lighthouse'
@@ -120,18 +149,15 @@ Lighthouse navigates over the CDP port itself, so launch a persistent context on
 that port and point `lighthouse` at it.
 
 ```ts
-import lighthouse, { desktopConfig } from 'lighthouse'
-import { handleAuditResult } from 'lighthouse-audit-utils'
+import { desktopConfig } from 'lighthouse'
+import { runAudit } from 'lighthouse-audit-utils'
 
-const result = await lighthouse(
-  page.url(),
-  { port, output: ['html', 'json'] },
-  desktopConfig
-)
-if (!result) throw new Error('Lighthouse returned no result')
-
-await handleAuditResult({
-  result,
+await runAudit({
+  lighthouseArgs: {
+    url: page.url(),
+    flags: { port, output: ['html', 'json'] },
+    config: desktopConfig,
+  },
   reports: { directory: testInfo.outputPath('lighthouse'), name: 'desktop' },
   thresholds: { performance: 90 },
 })

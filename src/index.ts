@@ -1,8 +1,12 @@
-export { handleAuditResult } from './handle-audit-result'
+export {
+  type HandleAuditResultArgs,
+  handleAuditResult,
+} from './handle-audit-result'
 export {
   type FormattingArgs,
   logRecommendations,
 } from './log-recommendations'
+export { type LighthouseArgs, runAudit } from './run-audit'
 export {
   type Category,
   checkAgainstThresholds,
