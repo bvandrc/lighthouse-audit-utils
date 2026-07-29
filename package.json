@@ -1,14 +1,25 @@
 {
   "name": "lighthouse-audit-utils",
-  "version": "1.2.1",
-  "description": "Small utilities for driving Lighthouse audits yourself: check scores against thresholds, write reports to disk, and log the fix list to the terminal.",
+  "version": "1.2.3",
+  "description": "Programmatic Lighthouse audit utilities for CI: check scores against thresholds, write HTML/JSON reports to disk, and log recommendations to the terminal. Includes a Playwright fixture.",
   "keywords": [
     "lighthouse",
+    "lighthouse-ci",
     "playwright",
+    "playwright-test",
     "performance",
+    "performance-testing",
+    "performance-budget",
+    "web-vitals",
+    "core-web-vitals",
     "ci",
+    "continuous-integration",
+    "audit",
+    "accessibility",
+    "seo",
     "terminal"
   ],
+  "homepage": "https://www.npmjs.com/package/lighthouse-audit-utils",
   "repository": {
     "type": "git",
     "url": "https://github.com/bvandrc/lighthouse-audit-utils"

@@ -1,11 +1,10 @@
 # lighthouse-audit-utils
 
-Everything you'd do with a finished Lighthouse run, in one call: write the
-reports to disk, print the fix list to the terminal, and fail the run if a
-category scored below its threshold. Each step can be configured or disabled.
+Programmatic [Lighthouse](https://github.com/GoogleChrome/lighthouse) audit utilities for CI and performance testing: score-threshold checking, HTML/JSON report writing, and a recommendations logger (ie, what is seen in a lighthouse report UI), all from a finished Lighthouse run in one call. Each step can be configured or disabled.
 
 Running the audits from Playwright? [`lighthouse-audit-utils/playwright`](#playwright)
-ships the CDP wiring as a fixture, so a test can audit whatever page it's on.
+ships the CDP wiring as a fixture, so a test can audit whatever page it's on —
+handy for Lighthouse CI-style performance budgets inside a Playwright suite.
 
 ```bash
 npm install --save-dev lighthouse-audit-utils
@@ -60,16 +59,15 @@ await handleAuditResult({
 ```
 
 The three steps run in that order — reports, recommendations, thresholds — so a
-failing run still prints its fix list before throwing.
+failing run still prints its recommendations before throwing.
 
 | Option            | Default    | Description                                                  |
 | ----------------- | ---------- | ------------------------------------------------------------ |
 | `result`          | _required_ | The full `RunnerResult` from a Lighthouse run                |
 | `reports`         | _none_     | Where to write the reports; omit to skip writing them        |
-| `recommendations` | _none_     | Recommendation logging options, or `false` to skip                  |
+| `recommendations` | _none_     | Recommendation logging options, or `false` to skip           |
 | `thresholds`      | `100`      | Minimum scores (0-100) — one number for all, or per category |
-| `ignoreError`     | `false`    | Return the threshold failures rather than throwing on them              |
-
+| `ignoreError`     | `false`    | Return the threshold failures rather than throwing on them   |
 
 ```ts
 // just the log
@@ -119,7 +117,7 @@ Pass `recommendations: false` to skip the log entirely.
 
 #### Output
 
-The log is the same fix list the report UI shows — failing audits, their
+The log is the same recommendations the report UI shows — failing audits, their
 estimated savings, and the individual offending URLs/nodes — so a failing CI run
 is actionable without downloading and opening the HTML report. Audits are
 grouped by category and sorted by estimated savings, so the biggest wins come
@@ -144,7 +142,7 @@ Performance: 87
       render-blocking-insight · score 50
         - https://example.com/assets/index.css  ·  Transfer Size: 12.4 KiB  ·  Duration: 52 ms
 
-Accessibility: 100 — nothing to fix
+Accessibility: 100 — nothing to flag
 ```
 
 ## Individual utilities
@@ -182,21 +180,24 @@ export const lighthouseTest = withLighthouse({
 // a.spec.ts
 lighthouseTest('home page', async ({ page, runAudit }) => {
   await page.goto('/')
-  await runAudit({ name: 'desktop', lighthouseArgs: { config: desktopConfig } })
+  await runAudit({
+    name: 'desktop',
+    lighthouseArgs: { config: desktopConfig },
+  })
   await runAudit({ name: 'mobile', thresholds: { performance: 60 } }) // merges over the fixture's value
 })
 ```
 
 - Each call to `runAudit` audits whatever page the test is currently on and writes its reports to the test's output directory.
 - Run `runAudit` more than once for more than one form factor
-— wrap the calls in `test.step` if you want them grouped in the report.
+  — wrap the calls in `test.step` if you want them grouped in the report.
 - `withLighthouse(options, test)` takes the test to extend second, so you can layer
-it onto your own fixtures; omit it to start from Playwright's `test`.
+  it onto your own fixtures; omit it to start from Playwright's `test`.
 
 | Option           | Required | Description                                                                              |
 | ---------------- | -------- | ---------------------------------------------------------------------------------------- |
 | `basePort`       | yes      | First worker's CDP port; each further worker gets the next one up                        |
-| `lighthouseArgs` | no       | `flags` and `config` for `lighthouse()`; `url` and `flags.port` are set for you           |
+| `lighthouseArgs` | no       | `flags` and `config` for `lighthouse()`; `url` and `flags.port` are set for you          |
 | `reports`        | no       | `(context) => { directory, name }`, or `false` to skip writing them                      |
 | `launchOptions`  | no       | Merged into the persistent context launch, which already sets the CDP port and `baseURL` |
 

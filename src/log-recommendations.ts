@@ -131,7 +131,7 @@ const formatItems = (
 }
 
 /**
- * Print the same fix list the Lighthouse report UI shows, so a failing run is
+ * Print the same recommendations the Lighthouse report UI shows, so a run is
  * actionable from the terminal/CI log without opening the HTML report.
  */
 export const logRecommendations = (
@@ -169,7 +169,7 @@ export const logRecommendations = (
     )
 
     if (!failing.length) {
-      lines.push('', `${categoryLine} — nothing to fix`)
+      lines.push('', `${categoryLine} — nothing to flag`)
       continue
     }
 
