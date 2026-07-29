@@ -1,11 +1,13 @@
 # lighthouse-audit-utils
 
-Everything you'd do with a finished Lighthouse run, in one call: write the
-reports to disk, print the fix list to the terminal, and fail the run if a
-category scored below its threshold. Each step can be configured or disabled.
+Programmatic [Lighthouse](https://github.com/GoogleChrome/lighthouse) audit
+utilities for CI and performance testing: score-threshold gating, HTML/JSON
+report writing, and a fix-list logger, all from a finished Lighthouse run in
+one call. Each step can be configured or disabled.
 
 Running the audits from Playwright? [`lighthouse-audit-utils/playwright`](#playwright)
-ships the CDP wiring as a fixture, so a test can audit whatever page it's on.
+ships the CDP wiring as a fixture, so a test can audit whatever page it's on —
+handy for Lighthouse CI-style performance budgets inside a Playwright suite.
 
 ```bash
 npm install --save-dev lighthouse-audit-utils
