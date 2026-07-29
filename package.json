@@ -1,6 +1,6 @@
 {
   "name": "lighthouse-audit-utils",
-  "version": "1.0.1",
+  "version": "1.2.1",
   "description": "Small utilities for driving Lighthouse audits yourself: check scores against thresholds, write reports to disk, and log the fix list to the terminal.",
   "keywords": [
     "lighthouse",
@@ -24,6 +24,10 @@
     ".": {
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
+    },
+    "./playwright": {
+      "types": "./dist/playwright.d.ts",
+      "default": "./dist/playwright.js"
     }
   },
   "files": [
@@ -47,10 +51,18 @@
     "ts:check": "tsc --noEmit"
   },
   "peerDependencies": {
+    "@playwright/test": "^1",
     "lighthouse": "^12 || ^13"
+  },
+  "peerDependenciesMeta": {
+    "@playwright/test": {
+      "optional": true,
+      "reason": "only needed for the lighthouse-audit-utils/playwright entrypoint"
+    }
   },
   "devDependencies": {
     "@biomejs/biome": "^2",
+    "@playwright/test": "^1",
     "@types/node": "^24",
     "es-toolkit": "^1",
     "lighthouse": "^13",

@@ -4,11 +4,15 @@ Everything you'd do with a finished Lighthouse run, in one call: write the
 reports to disk, print the fix list to the terminal, and fail the run if a
 category scored below its threshold. Each step can be configured or disabled.
 
+Running the audits from Playwright? [`lighthouse-audit-utils/playwright`](#playwright)
+ships the CDP wiring as a fixture, so a test can audit whatever page it's on.
+
 ```bash
 npm install --save-dev lighthouse-audit-utils
 ```
 
-`lighthouse` is a peer dependency.
+`lighthouse` is a peer dependency; `@playwright/test` is an optional one, needed
+only if using the [Playwright entrypoint](#playwright).
 
 ## Usage
 
@@ -143,10 +147,82 @@ Performance: 87
 Accessibility: 100 — nothing to fix
 ```
 
-## Example: Playwright
+## Individual utilities
 
-Lighthouse navigates over the CDP port itself, so launch a persistent context on
-that port and point `lighthouse` at it.
+The three steps are also exported on their own, each taking the report first and
+its options second:
+
+```ts
+writeReports(result, { directory, name })
+logRecommendations(lhr, { label, maxItems, maxValueLength })
+checkAgainstThresholds(lhr, { thresholds, ignoreError })
+```
+
+## Playwright
+
+`lighthouse-audit-utils/playwright` ships the wiring as a fixture.
+
+```ts
+// fixtures.ts
+import { desktopConfig } from 'lighthouse'
+import { withLighthouse } from 'lighthouse-audit-utils/playwright'
+
+export const lighthouseTest = withLighthouse({
+  basePort: 9222,
+  lighthouseArgs: {
+    flags: { disableStorageReset: true, output: ['html', 'json'] },
+    config: {
+      extends: 'lighthouse:default',
+      settings: { skipAudits: ['color-contrast'] },
+    },
+  },
+  thresholds: { performance: 70 },
+})
+
+// a.spec.ts
+lighthouseTest('home page', async ({ page, runAudit }) => {
+  await page.goto('/')
+  await runAudit({ name: 'desktop', lighthouseArgs: { config: desktopConfig } })
+  await runAudit({ name: 'mobile', thresholds: { performance: 60 } }) // merges over the fixture's value
+})
+```
+
+- Each call to `runAudit` audits whatever page the test is currently on and writes its reports to the test's output directory.
+- Run `runAudit` more than once for more than one form factor
+— wrap the calls in `test.step` if you want them grouped in the report.
+- `withLighthouse(options, test)` takes the test to extend second, so you can layer
+it onto your own fixtures; omit it to start from Playwright's `test`.
+
+| Option           | Required | Description                                                                              |
+| ---------------- | -------- | ---------------------------------------------------------------------------------------- |
+| `basePort`       | yes      | First worker's CDP port; each further worker gets the next one up                        |
+| `lighthouseArgs` | no       | `flags` and `config` for `lighthouse()`; `url` and `flags.port` are set for you           |
+| `reports`        | no       | `(context) => { directory, name }`, or `false` to skip writing them                      |
+| `launchOptions`  | no       | Merged into the persistent context launch, which already sets the CDP port and `baseURL` |
+
+Plus everything [`runAudit`](#usage) from `lighthouse-audit-utils` takes —
+`thresholds`, `ignoreError`, `recommendations`.
+
+The `runAudit` fixture takes `name` — which names that run's reports, so two
+audits in one test don't overwrite each other — and `lighthouseArgs`,
+`thresholds`, `ignoreError` and `recommendations`, to overwrite the overall fixture's:
+
+```ts
+const { result, failures } = await runAudit({
+  name: 'logged-in',
+  thresholds: { performance: 50 },
+  lighthouseArgs: { config: { settings: { onlyCategories: ['performance'] } } },
+})
+```
+
+`thresholds` merge when both are objects; anything else replaces, since a flat
+number can't be partially overridden.
+
+`context` is overridden to launch a persistent Chrome profile on the CDP port,
+since Lighthouse navigates over that port itself rather than driving the
+Playwright `page` — this way both see the same browser session.
+
+### Doing it by hand
 
 ```ts
 import { desktopConfig } from 'lighthouse'
@@ -161,17 +237,6 @@ await runAudit({
   reports: { directory: testInfo.outputPath('lighthouse'), name: 'desktop' },
   thresholds: { performance: 90 },
 })
-```
-
-## Individual utilities
-
-The three steps are also exported on their own, each taking the report first and
-its options second:
-
-```ts
-writeReports(result, { directory, name })
-logRecommendations(lhr, { label, maxItems, maxValueLength })
-checkAgainstThresholds(lhr, { thresholds, ignoreError })
 ```
 
 ## Development
