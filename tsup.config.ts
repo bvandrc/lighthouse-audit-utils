@@ -5,6 +5,7 @@ export default defineConfig((_options) => [
   {
     entry: {
       index: 'src/index.ts',
+      playwright: 'src/playwright.ts',
     },
     target: 'es2023',
     format: ['esm'],
