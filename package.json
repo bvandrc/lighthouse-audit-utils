@@ -1,6 +1,6 @@
 {
   "name": "lighthouse-audit-utils",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Small utilities for driving Lighthouse audits yourself: check scores against thresholds, write reports to disk, and log the fix list to the terminal.",
   "keywords": [
     "lighthouse",

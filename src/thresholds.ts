@@ -8,6 +8,7 @@ export type Category =
   | 'accessibility'
   | 'best-practices'
   | 'seo'
+  | 'agentic-browsing'
 
 /** Per-category minimums, or one number applied to every category. */
 export type LighthouseThresholds = number | Partial<Record<Category, number>>

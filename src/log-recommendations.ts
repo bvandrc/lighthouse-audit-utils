@@ -19,14 +19,6 @@ const maxMetricSavings = (audit: Audit) =>
 const metricValueType = (metric: string): Details.ItemValueType =>
   metric === 'CLS' ? 'numeric' : 'ms'
 
-/** Columns worth repeating alongside an item's identity (URL, node, ...). */
-const MEASURE_TYPES: Details.ItemValueType[] = [
-  'bytes',
-  'ms',
-  'timespanMs',
-  'numeric',
-]
-
 export type FormattingArgs = {
   /**
    * Rows shown per audit before collapsing to "…and N more"
@@ -111,6 +103,14 @@ const formatItems = (
   if (!identity) {
     return []
   }
+
+  /** Columns worth repeating alongside an item's identity (URL, node, ...). */
+  const MEASURE_TYPES: Details.ItemValueType[] = [
+    'bytes',
+    'ms',
+    'timespanMs',
+    'numeric',
+  ]
 
   const lines = details.items.slice(0, maxItems).map((item) => {
     const columns = [
