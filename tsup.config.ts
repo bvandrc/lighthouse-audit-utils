@@ -9,6 +9,11 @@ export default defineConfig((_options) => [
     target: 'es2023',
     format: ['esm'],
     clean: true,
+    // Used for very basic (primitive) utilities, so the utilized functions are
+    // bundled directly into our code, to avoid an additional dependency for
+    // users of this package. It's a devDependency, which tsup already bundles —
+    // this just says so out loud.
+    noExternal: ['es-toolkit'],
     dts: false, // emitted by `tsc -p tsconfig.build.json` — tsup's dts step doesn't work on TypeScript 7
     minify: false,
     sourcemap: true,

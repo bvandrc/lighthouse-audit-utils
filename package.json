@@ -52,6 +52,7 @@
   "devDependencies": {
     "@biomejs/biome": "^2",
     "@types/node": "^24",
+    "es-toolkit": "^1",
     "lighthouse": "^13",
     "tsup": "^8",
     "typescript": "^7"

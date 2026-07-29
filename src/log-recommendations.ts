@@ -1,3 +1,4 @@
+import { compact, orderBy } from 'es-toolkit'
 import type { RunnerResult } from 'lighthouse'
 import type Details from 'lighthouse/types/lhr/audit-details'
 
@@ -11,9 +12,6 @@ const resolveMetricSavings = (audit: Audit) =>
     string,
     number,
   ][]
-
-const maxMetricSavings = (audit: Audit) =>
-  Math.max(0, ...resolveMetricSavings(audit).map(([, ms]) => ms))
 
 /** CLS savings are a unitless shift score; every other metric is milliseconds. */
 const metricValueType = (metric: string): Details.ItemValueType =>
@@ -122,7 +120,7 @@ const formatItems = (
             `${heading.label}: ${formatValue(item[heading.key ?? ''], heading.valueType, maxValueLength)}`
         ),
     ]
-    return `        - ${columns.filter(Boolean).join('  ·  ')}`
+    return `        - ${compact(columns).join('  ·  ')}`
   })
 
   const remaining = details.items.length - maxItems
@@ -158,14 +156,17 @@ export const logRecommendations = (
       category.score === null ? 'N/A' : Math.round(category.score * 100)
     const categoryLine = `${category.title}: ${categoryScoreValue}`
 
-    const failing = category.auditRefs
-      .map(({ id }) => lhr.audits[id])
-      .filter((audit) => !!audit && audit.score !== null && audit.score < 1)
-      .sort(
-        (a, b) =>
-          maxMetricSavings(b) - maxMetricSavings(a) ||
-          (a.score ?? 0) - (b.score ?? 0)
-      )
+    const failing = orderBy(
+      category.auditRefs
+        .map(({ id }) => lhr.audits[id])
+        .filter((audit) => !!audit && audit.score !== null && audit.score < 1),
+      [
+        (audit) =>
+          Math.max(0, ...resolveMetricSavings(audit).map(([, ms]) => ms)),
+        ({ score }) => score ?? 0,
+      ],
+      ['desc', 'asc']
+    )
 
     if (!failing.length) {
       lines.push('', `${categoryLine} — nothing to fix`)
@@ -187,13 +188,13 @@ export const logRecommendations = (
           audit.details?.type === 'opportunity'
             ? audit.details.overallSavingsBytes
             : undefined
-        const estSavings = [
+        const estSavings = compact([
           ...resolveMetricSavings(audit).map(
             ([metric, value]) =>
               `${metric} ${formatValue(value, metricValueType(metric), maxValueLength)}`
           ),
           formatValue(overallSavingsBytes, 'bytes', maxValueLength),
-        ].filter(Boolean)
+        ])
 
         return estSavings.length
           ? ` — est. savings: ${estSavings.join(', ')}`
