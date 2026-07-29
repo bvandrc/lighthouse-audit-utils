@@ -53,9 +53,8 @@
   "scripts": {
     "__c0": "====================[ Build & Development ]======================",
     "prepack": "pnpm build",
-    "build": "tsup-node && pnpm build:types",
-    "build:types": "tsc -p tsconfig.build.json",
-    "start": "tsup-node --watch",
+    "build": "tsdown",
+    "start": "tsdown --watch",
     "__c1": "====================[ Linting & Type Checking ]==================",
     "check": "npx biome check . && pnpm ts:check",
     "format": "npx biome check . --fix",
@@ -77,7 +76,7 @@
     "@types/node": "^24",
     "es-toolkit": "^1",
     "lighthouse": "^13",
-    "tsup": "^8",
+    "tsdown": "^0.22",
     "typescript": "^7"
   }
 }
