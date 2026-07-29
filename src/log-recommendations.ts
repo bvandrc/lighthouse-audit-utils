@@ -131,8 +131,8 @@ const formatItems = (
 }
 
 /**
- * Print the same recommendations the Lighthouse report UI shows, so a failing
- * run is actionable from the terminal/CI log without opening the HTML report.
+ * Print the same recommendations the Lighthouse report UI shows, so a run is
+ * actionable from the terminal/CI log without opening the HTML report.
  */
 export const logRecommendations = (
   /** The Lighthouse result object   */
