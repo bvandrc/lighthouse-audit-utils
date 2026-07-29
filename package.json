@@ -1,7 +1,7 @@
 {
   "name": "lighthouse-audit-utils",
   "version": "1.2.1",
-  "description": "Programmatic Lighthouse audit utilities for CI: check scores against thresholds, write HTML/JSON reports to disk, and log a fix list to the terminal. Includes a Playwright fixture.",
+  "description": "Programmatic Lighthouse audit utilities for CI: check scores against thresholds, write HTML/JSON reports to disk, and log recommendations to the terminal. Includes a Playwright fixture.",
   "keywords": [
     "lighthouse",
     "lighthouse-ci",

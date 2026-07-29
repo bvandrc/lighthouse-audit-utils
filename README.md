@@ -2,8 +2,8 @@
 
 Programmatic [Lighthouse](https://github.com/GoogleChrome/lighthouse) audit
 utilities for CI and performance testing: score-threshold gating, HTML/JSON
-report writing, and a fix-list logger, all from a finished Lighthouse run in
-one call. Each step can be configured or disabled.
+report writing, and a recommendations logger, all from a finished Lighthouse
+run in one call. Each step can be configured or disabled.
 
 Running the audits from Playwright? [`lighthouse-audit-utils/playwright`](#playwright)
 ships the CDP wiring as a fixture, so a test can audit whatever page it's on —
@@ -62,7 +62,7 @@ await handleAuditResult({
 ```
 
 The three steps run in that order — reports, recommendations, thresholds — so a
-failing run still prints its fix list before throwing.
+failing run still prints its recommendations before throwing.
 
 | Option            | Default    | Description                                                  |
 | ----------------- | ---------- | ------------------------------------------------------------ |
@@ -121,7 +121,7 @@ Pass `recommendations: false` to skip the log entirely.
 
 #### Output
 
-The log is the same fix list the report UI shows — failing audits, their
+The log is the same recommendations the report UI shows — failing audits, their
 estimated savings, and the individual offending URLs/nodes — so a failing CI run
 is actionable without downloading and opening the HTML report. Audits are
 grouped by category and sorted by estimated savings, so the biggest wins come
@@ -146,7 +146,7 @@ Performance: 87
       render-blocking-insight · score 50
         - https://example.com/assets/index.css  ·  Transfer Size: 12.4 KiB  ·  Duration: 52 ms
 
-Accessibility: 100 — nothing to fix
+Accessibility: 100 — nothing to flag
 ```
 
 ## Individual utilities
