@@ -18,16 +18,16 @@ only if using the [Playwright entrypoint](#playwright).
 `runAudit` audits a URL and handles the result:
 
 ```ts
-import { runAudit } from "lighthouse-audit-utils";
+import { runAudit } from 'lighthouse-audit-utils'
 
 await runAudit({
   lighthouseArgs: {
-    url: "https://example.com",
-    flags: { port, output: ["html", "json"] },
+    url: 'https://example.com',
+    flags: { port, output: ['html', 'json'] },
   },
-  reports: { directory: "lighthouse", name: "desktop" },
+  reports: { directory: 'lighthouse', name: 'desktop' },
   thresholds: { performance: 90 },
-});
+})
 ```
 
 `lighthouseArgs` is handed to `lighthouse()`, in the order it takes them:
@@ -45,17 +45,17 @@ Everything else it takes is passed straight to `handleAuditResult` below, which 
 Handles a run you've already made yourself — this is what `runAudit` calls with the result from the actual `lighthouse()` audit:
 
 ```ts
-import lighthouse from "lighthouse";
-import { handleAuditResult } from "lighthouse-audit-utils";
+import lighthouse from 'lighthouse'
+import { handleAuditResult } from 'lighthouse-audit-utils'
 
-const result = await lighthouse(url, { port, output: ["html", "json"] });
-if (!result) throw new Error("Lighthouse returned no result");
+const result = await lighthouse(url, { port, output: ['html', 'json'] })
+if (!result) throw new Error('Lighthouse returned no result')
 
 await handleAuditResult({
   result,
-  reports: { directory: "lighthouse", name: "desktop" },
+  reports: { directory: 'lighthouse', name: 'desktop' },
   thresholds: { performance: 90 },
-});
+})
 ```
 
 The three steps run in that order — reports, recommendations, thresholds — so a
@@ -71,10 +71,10 @@ failing run still prints its recommendations before throwing.
 
 ```ts
 // just the log
-await handleAuditResult({ result, ignoreError: true });
+await handleAuditResult({ result, ignoreError: true })
 
 // just the thresholds
-await handleAuditResult({ result, recommendations: false });
+await handleAuditResult({ result, recommendations: false })
 ```
 
 ### `reports`
@@ -93,9 +93,9 @@ One number applies to every category; an object sets them individually. Any
 category you leave out has to score 100, so the strict case is the default:
 
 ```ts
-await handleAuditResult({ result }); // every category must score 100
-await handleAuditResult({ result, thresholds: 90 });
-await handleAuditResult({ result, thresholds: { performance: 90 } });
+await handleAuditResult({ result }) // every category must score 100
+await handleAuditResult({ result, thresholds: 90 })
+await handleAuditResult({ result, thresholds: { performance: 90 } })
 ```
 
 Only the categories present that are scored in the lighthouse report are checked.
@@ -151,9 +151,9 @@ The three steps are also exported on their own, each taking the report first and
 its options second:
 
 ```ts
-writeReports(result, { directory, name });
-logRecommendations(lhr, { label, maxItems, maxValueLength });
-checkAgainstThresholds(lhr, { thresholds, ignoreError });
+writeReports(result, { directory, name })
+logRecommendations(lhr, { label, maxItems, maxValueLength })
+checkAgainstThresholds(lhr, { thresholds, ignoreError })
 ```
 
 ## Playwright
@@ -162,30 +162,30 @@ checkAgainstThresholds(lhr, { thresholds, ignoreError });
 
 ```ts
 // fixtures.ts
-import { desktopConfig } from "lighthouse";
-import { withLighthouse } from "lighthouse-audit-utils/playwright";
+import { desktopConfig } from 'lighthouse'
+import { withLighthouse } from 'lighthouse-audit-utils/playwright'
 
 export const lighthouseTest = withLighthouse({
   basePort: 9222,
   lighthouseArgs: {
-    flags: { disableStorageReset: true, output: ["html", "json"] },
+    flags: { disableStorageReset: true, output: ['html', 'json'] },
     config: {
-      extends: "lighthouse:default",
-      settings: { skipAudits: ["color-contrast"] },
+      extends: 'lighthouse:default',
+      settings: { skipAudits: ['color-contrast'] },
     },
   },
   thresholds: { performance: 70 },
-});
+})
 
 // a.spec.ts
-lighthouseTest("home page", async ({ page, runAudit }) => {
-  await page.goto("/");
+lighthouseTest('home page', async ({ page, runAudit }) => {
+  await page.goto('/')
   await runAudit({
-    name: "desktop",
+    name: 'desktop',
     lighthouseArgs: { config: desktopConfig },
-  });
-  await runAudit({ name: "mobile", thresholds: { performance: 60 } }); // merges over the fixture's value
-});
+  })
+  await runAudit({ name: 'mobile', thresholds: { performance: 60 } }) // merges over the fixture's value
+})
 ```
 
 - Each call to `runAudit` audits whatever page the test is currently on and writes its reports to the test's output directory.
@@ -210,10 +210,10 @@ audits in one test don't overwrite each other — and `lighthouseArgs`,
 
 ```ts
 const { result, failures } = await runAudit({
-  name: "logged-in",
+  name: 'logged-in',
   thresholds: { performance: 50 },
-  lighthouseArgs: { config: { settings: { onlyCategories: ["performance"] } } },
-});
+  lighthouseArgs: { config: { settings: { onlyCategories: ['performance'] } } },
+})
 ```
 
 `thresholds` merge when both are objects; anything else replaces, since a flat
@@ -226,18 +226,18 @@ Playwright `page` — this way both see the same browser session.
 ### Doing it by hand
 
 ```ts
-import { desktopConfig } from "lighthouse";
-import { runAudit } from "lighthouse-audit-utils";
+import { desktopConfig } from 'lighthouse'
+import { runAudit } from 'lighthouse-audit-utils'
 
 await runAudit({
   lighthouseArgs: {
     url: page.url(),
-    flags: { port, output: ["html", "json"] },
+    flags: { port, output: ['html', 'json'] },
     config: desktopConfig,
   },
-  reports: { directory: testInfo.outputPath("lighthouse"), name: "desktop" },
+  reports: { directory: testInfo.outputPath('lighthouse'), name: 'desktop' },
   thresholds: { performance: 90 },
-});
+})
 ```
 
 ## Development
