@@ -1,3 +1,4 @@
+/** biome-ignore-all lint/performance/noBarrelFile: is the entry point */
 export {
   type HandleAuditResultArgs,
   handleAuditResult,
