@@ -17,7 +17,7 @@ https://github.com/bvandrc/bvandrc-conventions — follow all of them:
 
 @conventions/typescript.md — language-level TypeScript/JavaScript rules
 @conventions/playwright.md — test layout, test IDs, and accessibility scans
-@conventions/git.md — branch naming, formatting, and PR review practice
+@conventions/all.md — practice for every repo: branches, formatting, markdown, PR reviews
 
 ## Commands
 
