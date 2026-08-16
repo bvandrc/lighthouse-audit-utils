@@ -2,16 +2,13 @@
 
 Programmatic [Lighthouse](https://github.com/GoogleChrome/lighthouse) audit utilities for CI and performance testing: score-threshold checking, HTML/JSON report writing, and a recommendations logger (ie, what is seen in a lighthouse report UI), all from a finished Lighthouse run in one call. Each step can be configured or disabled.
 
-Running the audits from Playwright? [`lighthouse-audit-utils/playwright`](#playwright)
-ships the CDP wiring as a fixture, so a test can audit whatever page it's on —
-handy for Lighthouse CI-style performance budgets inside a Playwright suite.
+Running the audits from Playwright? [`lighthouse-audit-utils/playwright`](#playwright) ships the CDP wiring as a fixture, so a test can audit whatever page it's on — handy for Lighthouse CI-style performance budgets inside a Playwright suite.
 
 ```bash
 npm install --save-dev lighthouse-audit-utils
 ```
 
-`lighthouse` is a peer dependency; `@playwright/test` is an optional one, needed
-only if using the [Playwright entrypoint](#playwright).
+`lighthouse` is a peer dependency; `@playwright/test` is an optional one, needed only if using the [Playwright entrypoint](#playwright).
 
 ## Usage
 
@@ -58,8 +55,7 @@ await handleAuditResult({
 })
 ```
 
-The three steps run in that order — reports, recommendations, thresholds — so a
-failing run still prints its recommendations before throwing.
+The three steps run in that order — reports, recommendations, thresholds — so a failing run still prints its recommendations before throwing.
 
 | Option            | Default    | Description                                                  |
 | ----------------- | ---------- | ------------------------------------------------------------ |
@@ -84,13 +80,11 @@ await handleAuditResult({ result, recommendations: false })
 | `directory` | _required_ | Directory to write into; created if it doesn't exist           |
 | `name`      | _required_ | Base filename, e.g. `desktop` → `desktop.html`, `desktop.json` |
 
-Each report is written to `<directory>/<name>.<format>`, using the formats the
-run's `output` flag asked for.
+Each report is written to `<directory>/<name>.<format>`, using the formats the run's `output` flag asked for.
 
 ### `thresholds`
 
-One number applies to every category; an object sets them individually. Any
-category you leave out has to score 100, so the strict case is the default:
+One number applies to every category; an object sets them individually. Any category you leave out has to score 100, so the strict case is the default:
 
 ```ts
 await handleAuditResult({ result }) // every category must score 100
@@ -102,8 +96,7 @@ Only the categories present that are scored in the lighthouse report are checked
 
 ### `ignoreError`
 
-Returns the threshold failures instead of throwing an error, so you can decide what to do with
-them. `undefined` when everything passed.
+Returns the threshold failures instead of throwing an error, so you can decide what to do with them. `undefined` when everything passed.
 
 ### `recommendations`
 
@@ -117,11 +110,7 @@ Pass `recommendations: false` to skip the log entirely.
 
 #### Output
 
-The log is the same recommendations the report UI shows — failing audits, their
-estimated savings, and the individual offending URLs/nodes — so a failing CI run
-is actionable without downloading and opening the HTML report. Audits are
-grouped by category and sorted by estimated savings, so the biggest wins come
-first:
+The log is the same recommendations the report UI shows — failing audits, their estimated savings, and the individual offending URLs/nodes — so a failing CI run is actionable without downloading and opening the HTML report. Audits are grouped by category and sorted by estimated savings, so the biggest wins come first:
 
 ```
 ───── Lighthouse recommendations: desktop — https://example.com/ ─────
@@ -147,8 +136,7 @@ Accessibility: 100 — nothing to flag
 
 ## Individual utilities
 
-The three steps are also exported on their own, each taking the report first and
-its options second:
+The three steps are also exported on their own, each taking the report first and its options second:
 
 ```ts
 writeReports(result, { directory, name })
@@ -189,10 +177,8 @@ lighthouseTest('home page', async ({ page, runAudit }) => {
 ```
 
 - Each call to `runAudit` audits whatever page the test is currently on and writes its reports to the test's output directory.
-- Run `runAudit` more than once for more than one form factor
-  — wrap the calls in `test.step` if you want them grouped in the report.
-- `withLighthouse(options, test)` takes the test to extend second, so you can layer
-  it onto your own fixtures; omit it to start from Playwright's `test`.
+- Run `runAudit` more than once for more than one form factor — wrap the calls in `test.step` if you want them grouped in the report.
+- `withLighthouse(options, test)` takes the test to extend second, so you can layer it onto your own fixtures; omit it to start from Playwright's `test`.
 
 | Option           | Required | Description                                                                              |
 | ---------------- | -------- | ---------------------------------------------------------------------------------------- |
@@ -201,12 +187,9 @@ lighthouseTest('home page', async ({ page, runAudit }) => {
 | `reports`        | no       | `(context) => { directory, name }`, or `false` to skip writing them                      |
 | `launchOptions`  | no       | Merged into the persistent context launch, which already sets the CDP port and `baseURL` |
 
-Plus everything [`runAudit`](#usage) from `lighthouse-audit-utils` takes —
-`thresholds`, `ignoreError`, `recommendations`.
+Plus everything [`runAudit`](#usage) from `lighthouse-audit-utils` takes — `thresholds`, `ignoreError`, `recommendations`.
 
-The `runAudit` fixture takes `name` — which names that run's reports, so two
-audits in one test don't overwrite each other — and `lighthouseArgs`,
-`thresholds`, `ignoreError` and `recommendations`, to overwrite the overall fixture's:
+The `runAudit` fixture takes `name` — which names that run's reports, so two audits in one test don't overwrite each other — and `lighthouseArgs`, `thresholds`, `ignoreError` and `recommendations`, to overwrite the overall fixture's:
 
 ```ts
 const { result, failures } = await runAudit({
@@ -216,12 +199,9 @@ const { result, failures } = await runAudit({
 })
 ```
 
-`thresholds` merge when both are objects; anything else replaces, since a flat
-number can't be partially overridden.
+`thresholds` merge when both are objects; anything else replaces, since a flat number can't be partially overridden.
 
-`context` is overridden to launch a persistent Chrome profile on the CDP port,
-since Lighthouse navigates over that port itself rather than driving the
-Playwright `page` — this way both see the same browser session.
+`context` is overridden to launch a persistent Chrome profile on the CDP port, since Lighthouse navigates over that port itself rather than driving the Playwright `page` — this way both see the same browser session.
 
 ### Doing it by hand
 
@@ -250,8 +230,7 @@ pnpm check       # biome + tsc
 pnpm format      # biome check --fix
 ```
 
-CI type-checks and builds against both supported peer majors, Lighthouse 12 and
-13, on Node 22/24/26.
+CI type-checks and builds against both supported peer majors, Lighthouse 12 and 13, on Node 22/24/26.
 
 ## License
 
