@@ -1,5 +1,12 @@
 /** biome-ignore-all lint/performance/noBarrelFile: is the entry point */
 export {
+  type BudgetFailure,
+  checkAgainstBudgets,
+  type SavingsAudit,
+  type SavingsBudgets,
+} from './budgets'
+export {
+  type AuditFailure,
   type HandleAuditResultArgs,
   handleAuditResult,
 } from './handle-audit-result'

@@ -71,6 +71,13 @@ const defaultReports = ({ testInfo, name }: ReportsContext) => ({
   name: name ?? 'lighthouse',
 })
 
+/** Budgets are always objects, so a call only has to name the audits it changes. */
+const mergeBudgets = (
+  base: AuditOverrides['budgets'],
+  override: AuditOverrides['budgets']
+): AuditOverrides['budgets'] =>
+  base && override ? { ...base, ...override } : (override ?? base)
+
 /** Object thresholds merge; anything else replaces, since a flat number can't be partially overridden. */
 const mergeThresholds = (
   base: AuditOverrides['thresholds'],
@@ -111,29 +118,33 @@ export const withLighthouse = <T extends BaseTest>(
 ) =>
   test.extend<LighthouseFixtures, LighthouseWorkerFixtures>({
     runAudit: async ({ page, lighthousePort: port }, use, testInfo) => {
-      // `lighthouseArgs` and `thresholds` merge with the fixture's rather than
-      // replacing them, so a call only has to name what it changes.
-      await use(({ name, lighthouseArgs, thresholds, ...callArgs } = {}) => {
-        const {
-          lighthouseArgs: baseArgs,
-          thresholds: baseThresholds,
-          ...handleArgs
-        } = { ...fixtureOverrides, ...callArgs }
+      // `lighthouseArgs`, `thresholds` and `budgets` merge with the fixture's
+      // rather than replacing them, so a call only has to name what it changes.
+      await use(
+        ({ name, lighthouseArgs, thresholds, budgets, ...callArgs } = {}) => {
+          const {
+            lighthouseArgs: baseArgs,
+            thresholds: baseThresholds,
+            budgets: baseBudgets,
+            ...handleArgs
+          } = { ...fixtureOverrides, ...callArgs }
 
-        return runLighthouse({
-          lighthouseArgs: {
-            url: page.url(),
-            flags: { port, ...baseArgs?.flags, ...lighthouseArgs?.flags },
-            config: toMerged(
-              baseArgs?.config ?? {},
-              lighthouseArgs?.config ?? {}
-            ),
-          },
-          reports: reports ? reports({ testInfo, name }) : undefined,
-          thresholds: mergeThresholds(baseThresholds, thresholds),
-          ...handleArgs,
-        })
-      })
+          return runLighthouse({
+            lighthouseArgs: {
+              url: page.url(),
+              flags: { port, ...baseArgs?.flags, ...lighthouseArgs?.flags },
+              config: toMerged(
+                baseArgs?.config ?? {},
+                lighthouseArgs?.config ?? {}
+              ),
+            },
+            reports: reports ? reports({ testInfo, name }) : undefined,
+            thresholds: mergeThresholds(baseThresholds, thresholds),
+            budgets: mergeBudgets(baseBudgets, budgets),
+            ...handleArgs,
+          })
+        }
+      )
     },
 
     lighthousePort: [
