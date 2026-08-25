@@ -1,8 +1,20 @@
 import type { RunnerResult } from 'lighthouse'
 
+import {
+  type BudgetFailure,
+  type BudgetsArgs,
+  checkAgainstBudgets,
+} from './budgets'
 import { type FormattingArgs, logRecommendations } from './log-recommendations'
-import { checkAgainstThresholds, type ThresholdsArgs } from './thresholds'
+import {
+  checkAgainstThresholds,
+  type ThresholdFailure,
+  type ThresholdsArgs,
+} from './thresholds'
 import { type WriteReportsArgs, writeReports } from './write-reports'
+
+/** Either way a run can come up short: a category's score, or an audit's bytes. */
+export type AuditFailure = ThresholdFailure | BudgetFailure
 
 export type HandleAuditResultArgs = {
   /** The full `RunnerResult` from a Lighthouse run */
@@ -16,20 +28,26 @@ export type HandleAuditResultArgs = {
         label?: string
       })
     | false
-} & ThresholdsArgs
+} & ThresholdsArgs &
+  BudgetsArgs
 
 /**
  * Everything you'd do with a finished Lighthouse run:
  *  1. write the reports
  *  2. log the recommendations
- *  3. check the scores against the thresholds (goes last so reporting occurs before throwing).
+ *  3. check the budgets, then the scores against the thresholds (both go last
+ *     so reporting occurs before throwing).
  *
- * @returns the threshold failures, if `ignoreError` kept them from throwing
+ * Budgets are checked first: a category score barely moves on wasted bytes, so
+ * when a run breaks both, the budget is the more specific thing to report.
+ *
+ * @returns the failures of both checks, if `ignoreError` kept them from throwing
  */
 export const handleAuditResult = async ({
   result,
   reports,
   thresholds,
+  budgets,
   ignoreError,
   recommendations,
 }: HandleAuditResultArgs) => {
@@ -44,10 +62,20 @@ export const handleAuditResult = async ({
     })
   }
 
-  const failures = checkAgainstThresholds(result.lhr, {
+  const budgetFailures = checkAgainstBudgets(result.lhr, {
+    budgets,
+    ignoreError,
+  })
+
+  const thresholdFailures = checkAgainstThresholds(result.lhr, {
     thresholds,
     ignoreError,
   })
 
-  return failures
+  const failures: AuditFailure[] = [
+    ...(budgetFailures ?? []),
+    ...(thresholdFailures ?? []),
+  ]
+
+  return failures.length ? failures : undefined
 }
