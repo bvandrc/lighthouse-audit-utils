@@ -17,32 +17,32 @@ export type SavingsAudit =
   | 'unused-css-rules'
   | 'unused-javascript'
 
-/**
- * Per-audit ceilings on wasted KiB, e.g. `{ 'unused-javascript': 700 }`.
- *
- * `string & {}` keeps `SavingsAudit`'s autocomplete while still accepting the
- * ids it doesn't list -- a closed union would go stale across majors.
- */
+/** Per-audit ceilings on wasted KiB, e.g. `{ 'unused-javascript': 700 }`. */
 export type SavingsBudgets = Partial<
-  Record<SavingsAudit | (string & {}), number>
+  Record<
+    // `string & {}` keeps `SavingsAudit`'s autocomplete while still accepting
+    // the ids it doesn't list -- a closed union would go stale across majors.
+    SavingsAudit | (string & {}),
+    number
+  >
 >
 
 /** An audit that wasted more KiB than it was budgeted. */
 export type BudgetFailure = {
   /** The audit's id as the run reported it — usually a `SavingsAudit`. */
   audit: string
-  /** The ceiling this audit was checked against, in KiB. */
-  maximum: number
-  /** What it actually wasted, in KiB. */
-  wasted: number
+  /** The ceiling this audit was checked against. */
+  budgetKib: number
+  /** What it actually wasted. */
+  wastedKib: number
 }
 
 const budgetFailureMessage = (failures: BudgetFailure[]) =>
   [
     'Lighthouse budgets exceeded:',
     ...failures.map(
-      ({ audit, maximum, wasted }) =>
-        `${audit} wasted ${Math.round(wasted)} KiB, above the ${maximum} KiB budget`
+      ({ audit, budgetKib, wastedKib }) =>
+        `${audit} wasted ${Math.round(wastedKib)} KiB, above the ${budgetKib} KiB budget`
     ),
   ].join('\n')
 
@@ -50,7 +50,7 @@ const budgetFailureMessage = (failures: BudgetFailure[]) =>
  * The audit's wasted KiB, or `undefined` when it reported no savings — either
  * because it didn't apply to this page or because there was nothing to save.
  */
-const wastedKib = (lhr: Lhr, audit: string): number | undefined => {
+const getWastedKib = (lhr: Lhr, audit: string): number | undefined => {
   const details = lhr.audits[audit]?.details
   const bytes =
     details && 'overallSavingsBytes' in details
@@ -91,12 +91,12 @@ export const checkAgainstBudgets = (
 
   const failures = Object.entries(budgets)
     .filter((entry): entry is [string, number] => entry[1] !== undefined)
-    .map(([audit, maximum]) => ({
+    .map(([audit, budgetKib]) => ({
       audit,
-      maximum,
-      wasted: wastedKib(lhr, audit) ?? 0,
+      budgetKib,
+      wastedKib: getWastedKib(lhr, audit) ?? 0,
     }))
-    .filter(({ wasted, maximum }) => wasted > maximum)
+    .filter(({ wastedKib, budgetKib }) => wastedKib > budgetKib)
 
   if (!failures.length) {
     return undefined
