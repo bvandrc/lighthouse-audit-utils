@@ -37,15 +37,6 @@ export type BudgetFailure = {
   wastedKib: number
 }
 
-const budgetFailureMessage = (failures: BudgetFailure[]) =>
-  [
-    'Lighthouse budgets exceeded:',
-    ...failures.map(
-      ({ audit, budgetKib, wastedKib }) =>
-        `${audit} wasted ${Math.round(wastedKib)} KiB, above the ${budgetKib} KiB budget`
-    ),
-  ].join('\n')
-
 /**
  * The audit's wasted KiB, or `undefined` when it reported no savings — either
  * because it didn't apply to this page or because there was nothing to save.
@@ -103,7 +94,15 @@ export const checkAgainstBudgets = (
   }
 
   if (!ignoreError) {
-    throw new Error(budgetFailureMessage(failures))
+    throw new Error(
+      [
+        'Lighthouse budgets exceeded:',
+        ...failures.map(
+          ({ audit, budgetKib, wastedKib }) =>
+            `${audit} wasted ${Math.round(wastedKib)} KiB, above the ${budgetKib} KiB budget`
+        ),
+      ].join('\n')
+    )
   }
 
   return failures
