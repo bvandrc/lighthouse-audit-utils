@@ -5,11 +5,11 @@ type Lhr = RunnerResult['lhr']
 const BYTES_PER_KIB = 1024
 
 /**
- * Byte-savings audits present in every supported Lighthouse major. Any audit
- * id that reports `overallSavingsBytes` can be budgeted — which ones a run
- * produces depends on its major, since Lighthouse 13 replaced several
- * opportunity audits with insights (`legacy-javascript` became
- * `legacy-javascript-insight`, and so on). These are the suggestions.
+ * Byte-savings audits present in every supported Lighthouse major — all of
+ * them report `overallSavingsBytes`. Any audit id that reports it can be
+ * budgeted; these are just the known ones. Which a given run produces depends
+ * on its major, since Lighthouse 13 replaced several opportunity audits with
+ * insights (`legacy-javascript` became `legacy-javascript-insight`, and so on).
  */
 export type SavingsAudit =
   | 'unminified-css'
