@@ -1,6 +1,6 @@
 # lighthouse-audit-utils
 
-Programmatic [Lighthouse](https://github.com/GoogleChrome/lighthouse) audit utilities for CI and performance testing: score-threshold checking, HTML/JSON report writing, and a recommendations logger (ie, what is seen in a lighthouse report UI), all from a finished Lighthouse run in one call. Each step can be configured or disabled.
+Programmatic [Lighthouse](https://github.com/GoogleChrome/lighthouse) audit utilities for CI and performance testing: score-threshold checking, byte budgets, HTML/JSON report writing, and a recommendations logger (ie, what is seen in a lighthouse report UI), all from a finished Lighthouse run in one call. Each step can be configured or disabled.
 
 Running the audits from Playwright? [`lighthouse-audit-utils/playwright`](#playwright) ships the CDP wiring as a fixture, so a test can audit whatever page it's on — handy for Lighthouse CI-style performance budgets inside a Playwright suite.
 
@@ -55,7 +55,7 @@ await handleAuditResult({
 })
 ```
 
-The three steps run in that order — reports, recommendations, thresholds — so a failing run still prints its recommendations before throwing.
+The steps run in that order — reports, recommendations, then the budget and threshold checks — so a failing run still prints its recommendations before throwing.
 
 | Option            | Default    | Description                                                  |
 | ----------------- | ---------- | ------------------------------------------------------------ |
@@ -63,7 +63,8 @@ The three steps run in that order — reports, recommendations, thresholds — s
 | `reports`         | _none_     | Where to write the reports; omit to skip writing them        |
 | `recommendations` | _none_     | Recommendation logging options, or `false` to skip           |
 | `thresholds`      | `100`      | Minimum scores (0-100) — one number for all, or per category |
-| `ignoreError`     | `false`    | Return the threshold failures rather than throwing on them   |
+| `budgets`         | _none_     | Maximum wasted KiB, per byte-savings audit                   |
+| `ignoreError`     | `false`    | Return the failures rather than throwing on them             |
 
 ```ts
 // just the log
@@ -94,9 +95,36 @@ await handleAuditResult({ result, thresholds: { performance: 90 } })
 
 Only the categories present that are scored in the lighthouse report are checked.
 
+### `budgets`
+
+Ceilings on what an audit is allowed to waste, in KiB, keyed by audit id:
+
+```ts
+await handleAuditResult({ result, budgets: { 'unused-javascript': 700 } })
+```
+
+A category score barely moves on bytes that are downloaded and never run — a page can grow by a megabyte of dead JavaScript with every audit still green. A budget is what turns that into a failing run:
+
+```
+Lighthouse budgets exceeded:
+unused-javascript wasted 1129 KiB, above the 700 KiB budget
+```
+
+Only the audits you name are checked, and only the byte-savings ones are worth naming — the audits reporting an estimated savings in bytes. Which ones a run produces depends on your Lighthouse major: `unminified-css`, `unminified-javascript`, `unused-css-rules` and `unused-javascript` are in both 12 and 13, while several of 12's other opportunities (`legacy-javascript`, `modern-image-formats`, `uses-responsive-images`, ...) became insight audits in 13. Those four autocomplete; any other id is accepted.
+
+Budgeting an audit the run never produced throws rather than passing, so a budget can't quietly stop checking anything — whether you narrowed the run with `onlyCategories`/`skipAudits` or upgraded to a major that renamed the audit:
+
+```
+This Lighthouse run has no legacy-javascript audit to budget. Check the run's
+`onlyCategories`/`skipAudits` settings, and that the audit still exists in this
+Lighthouse major.
+```
+
+Budgets are checked before thresholds, so a run that breaks both reports the budget: it's the more specific of the two.
+
 ### `ignoreError`
 
-Returns the threshold failures instead of throwing an error, so you can decide what to do with them. `undefined` when everything passed.
+Returns the budget and threshold failures instead of throwing an error, so you can decide what to do with them. `undefined` when everything passed.
 
 ### `recommendations`
 
@@ -142,6 +170,7 @@ The three steps are also exported on their own, each taking the report first and
 writeReports(result, { directory, name })
 logRecommendations(lhr, { label, maxItems, maxValueLength })
 checkAgainstThresholds(lhr, { thresholds, ignoreError })
+checkAgainstBudgets(lhr, { budgets, ignoreError })
 ```
 
 ## Playwright
@@ -163,6 +192,7 @@ export const lighthouseTest = withLighthouse({
     },
   },
   thresholds: { performance: 70 },
+  budgets: { 'unused-javascript': 700 },
 })
 
 // a.spec.ts
@@ -187,9 +217,9 @@ lighthouseTest('home page', async ({ page, runAudit }) => {
 | `reports`        | no       | `(context) => { directory, name }`, or `false` to skip writing them                      |
 | `launchOptions`  | no       | Merged into the persistent context launch, which already sets the CDP port and `baseURL` |
 
-Plus everything [`runAudit`](#usage) from `lighthouse-audit-utils` takes — `thresholds`, `ignoreError`, `recommendations`.
+Plus everything [`runAudit`](#usage) from `lighthouse-audit-utils` takes — `thresholds`, `budgets`, `ignoreError`, `recommendations`.
 
-The `runAudit` fixture takes `name` — which names that run's reports, so two audits in one test don't overwrite each other — and `lighthouseArgs`, `thresholds`, `ignoreError` and `recommendations`, to overwrite the overall fixture's:
+The `runAudit` fixture takes `name` — which names that run's reports, so two audits in one test don't overwrite each other — and `lighthouseArgs`, `thresholds`, `budgets`, `ignoreError` and `recommendations`, to overwrite the overall fixture's:
 
 ```ts
 const { result, failures } = await runAudit({
@@ -199,7 +229,7 @@ const { result, failures } = await runAudit({
 })
 ```
 
-`thresholds` merge when both are objects; anything else replaces, since a flat number can't be partially overridden.
+`thresholds` merge when both are objects; anything else replaces, since a flat number can't be partially overridden. `budgets` are always objects, so they always merge — a call only has to name the audits it changes.
 
 `context` is overridden to launch a persistent Chrome profile on the CDP port, since Lighthouse navigates over that port itself rather than driving the Playwright `page` — this way both see the same browser session.
 
