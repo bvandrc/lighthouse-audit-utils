@@ -19,8 +19,7 @@ export type HandleAuditResultArgs = {
 } & ThresholdsArgs
 
 /**
- * Everything you'd do with a finished Lighthouse run.
- *
+ * Everything you'd do with a finished Lighthouse run:
  *  1. write the reports
  *  2. log the recommendations
  *  3. check the scores against the thresholds (goes last so reporting occurs before throwing).
