@@ -189,7 +189,7 @@ lighthouseTest('home page', async ({ page, runAudit }) => {
 
 Plus everything [`runAudit`](#usage) from `lighthouse-audit-utils` takes — `thresholds`, `ignoreError`, `recommendations`.
 
-The `runAudit` fixture takes `name` — which names that run's reports, so two audits in one test don't overwrite each other — and `lighthouseArgs`, `thresholds`, `ignoreError` and `recommendations`, to overwrite the overall fixture's:
+The `runAudit` fixture takes `name` — which names that run's reports, so two audits in one test don't overwrite each other — and `lighthouseArgs`, `thresholds`, `ignoreError`, and `recommendations`, to overwrite the overall fixture's:
 
 ```ts
 const { result, failures } = await runAudit({
