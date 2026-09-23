@@ -6,7 +6,7 @@ type Lhr = RunnerResult['lhr']
 type Audit = Lhr['audits'][string]
 type AuditDetails = NonNullable<Audit['details']>
 
-/** resolves to values that are only non-zero numbers */
+/** The audit's metric savings, less the metrics with nothing to save. */
 const resolveMetricSavings = (audit: Audit) =>
   Object.entries(audit.metricSavings ?? {}).filter(([, ms]) => !!ms) as [
     string,
@@ -135,7 +135,7 @@ const formatItems = (
  * actionable from the terminal/CI log without opening the HTML report.
  */
 export const logRecommendations = (
-  /** The Lighthouse result object   */
+  /** The Lighthouse result object */
   lhr: Lhr,
   {
     label,
