@@ -1,0 +1,76 @@
+import { checkAgainstThresholds } from '../thresholds'
+import { category, lhr } from './__helpers__/lhr-fixtures'
+
+const SCORES = {
+  performance: 0.82,
+  accessibility: 1,
+  seo: 0.9,
+}
+
+const REPORT = lhr({
+  categories: Object.entries(SCORES).map(([id, score]) => category(id, score)),
+})
+
+describe('checkAgainstThresholds', () => {
+  it('passes when every category clears the flat minimum', () => {
+    expect(checkAgainstThresholds(REPORT, { thresholds: 80 })).toBeUndefined()
+  })
+
+  it('treats a score exactly at the minimum as clearing it', () => {
+    expect(checkAgainstThresholds(REPORT, { thresholds: 82 })).toBeUndefined()
+  })
+
+  it('defaults to requiring a perfect score', () => {
+    expect(() => checkAgainstThresholds(REPORT, {})).toThrow(
+      'performance scored 82, below the 100 threshold'
+    )
+  })
+
+  it('reports the score out of 100, not the 0-1 the run carries', () => {
+    const failures = checkAgainstThresholds(REPORT, {
+      thresholds: 95,
+      ignoreError: true,
+    })
+
+    expect(failures).toEqual([
+      { category: 'performance', minimum: 95, score: 82 },
+      { category: 'seo', minimum: 95, score: 90 },
+    ])
+  })
+
+  it('holds a category omitted from a per-category object to 100', () => {
+    const failures = checkAgainstThresholds(REPORT, {
+      // `seo` is left out, so its 90 is a shortfall against the implied 100.
+      thresholds: { performance: 80 },
+      ignoreError: true,
+    })
+
+    expect(failures).toEqual([{ category: 'seo', minimum: 100, score: 90 }])
+  })
+
+  it('skips a category the run did not score', () => {
+    const report = lhr({
+      categories: [category('performance', null), category('seo', 0.5)],
+    })
+
+    expect(
+      checkAgainstThresholds(report, { thresholds: 40, ignoreError: true })
+    ).toBeUndefined()
+  })
+
+  it('names every shortfall in the error, not just the first', () => {
+    expect(() => checkAgainstThresholds(REPORT, { thresholds: 95 })).toThrow(
+      [
+        'Lighthouse thresholds not met:',
+        'performance scored 82, below the 95 threshold',
+        'seo scored 90, below the 95 threshold',
+      ].join('\n')
+    )
+  })
+
+  it('returns the shortfalls rather than throwing when told to ignore them', () => {
+    expect(() =>
+      checkAgainstThresholds(REPORT, { thresholds: 95, ignoreError: true })
+    ).not.toThrow()
+  })
+})

@@ -60,7 +60,12 @@
     "__c1": "====================[ Linting & Type Checking ]==================",
     "check": "npx biome check . && pnpm ts:check",
     "format": "npx biome check . --fix",
-    "ts:check": "tsc --noEmit"
+    "ts:check": "tsc --noEmit",
+    "__c2": "====================[ Unit Testing ]=======================",
+    "test": "vitest",
+    "test:unit": "pnpm test:coverage",
+    "test:watch": "pnpm run test --watch",
+    "test:coverage": "pnpm run test --coverage"
   },
   "peerDependencies": {
     "@playwright/test": "^1",
@@ -76,9 +81,12 @@
     "@biomejs/biome": "^2",
     "@playwright/test": "^1",
     "@types/node": "^24",
+    "@vitest/coverage-v8": "^4",
     "es-toolkit": "^1",
     "lighthouse": "^13",
+    "memfs": "^4",
     "tsdown": "^0.22",
-    "typescript": "^7"
+    "typescript": "^7",
+    "vitest": "^4"
   }
 }

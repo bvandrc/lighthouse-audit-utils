@@ -4,6 +4,7 @@
 
 - **Layout**: `src/` is the whole package. Two entrypoints: `src/index.ts` (`.`) and `src/playwright.ts` (`./playwright`).
 - **Peers**: `lighthouse` is required; `@playwright/test` is optional and only needed by the `./playwright` entrypoint — keep it out of the main entrypoint's import graph.
+- **Unit tests**: `src/__tests__/`, with the Lighthouse result builders in `src/__tests__/__helpers__/lhr-fixtures.ts`. A test drives a real `RunnerResult` through the exported function rather than reaching the formatting helpers, which are internal.
 
 ## Code conventions
 
@@ -17,6 +18,7 @@ Conventions live outside this file, synced from https://github.com/bvandrc/bvand
 
 - `pnpm build` — tsdown bundle. `pnpm start` — tsdown in watch mode.
 - `pnpm format` — Biome check/fix. `pnpm check` — the full gate: Biome plus `pnpm ts:check` (`tsc --noEmit`); it's what CI runs.
+- `pnpm test` — Vitest. `pnpm test:watch`, `pnpm test:coverage`; CI runs `pnpm test:unit`, which is the coverage run.
 
 ## Repo conventions
 
