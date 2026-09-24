@@ -17,6 +17,7 @@ Conventions live outside this file, synced from https://github.com/bvandrc/bvand
 
 - `pnpm build` — tsdown bundle. `pnpm start` — tsdown in watch mode.
 - `pnpm format` — Biome check/fix. `pnpm check` — the full gate: Biome plus `pnpm ts:check` (`tsc --noEmit`); it's what CI runs.
+- `pnpm test` — Vitest. `pnpm test:watch` to re-run on a change; CI runs `pnpm test:unit`.
 
 ## Repo conventions
 
