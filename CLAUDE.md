@@ -4,7 +4,6 @@
 
 - **Layout**: `src/` is the whole package. Two entrypoints: `src/index.ts` (`.`) and `src/playwright.ts` (`./playwright`).
 - **Peers**: `lighthouse` is required; `@playwright/test` is optional and only needed by the `./playwright` entrypoint — keep it out of the main entrypoint's import graph.
-- **Unit tests**: `src/__tests__/`, with the Lighthouse result builders in `src/__tests__/__helpers__/lhr-fixtures.ts`. A test drives a real `RunnerResult` through the exported function rather than reaching the formatting helpers, which are internal.
 
 ## Code conventions
 
