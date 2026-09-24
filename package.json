@@ -63,9 +63,8 @@
     "ts:check": "tsc --noEmit",
     "__c2": "====================[ Unit Testing ]=======================",
     "test": "vitest",
-    "test:unit": "pnpm test:coverage",
-    "test:watch": "pnpm run test --watch",
-    "test:coverage": "pnpm run test --coverage"
+    "test:unit": "pnpm test",
+    "test:watch": "pnpm run test --watch"
   },
   "peerDependencies": {
     "@playwright/test": "^1",
@@ -81,7 +80,6 @@
     "@biomejs/biome": "^2",
     "@playwright/test": "^1",
     "@types/node": "^24",
-    "@vitest/coverage-v8": "^4",
     "es-toolkit": "^1",
     "lighthouse": "^13",
     "memfs": "^4",
