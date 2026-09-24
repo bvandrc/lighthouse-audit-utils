@@ -9,10 +9,10 @@ import {
   tableDetails,
 } from './__helpers__/lhr-fixtures'
 
-/** The one string `logRecommendations` printed, as the terminal would show it. */
+/** The last string `logRecommendations` printed, as the terminal would show it. */
 const logged = () => {
-  const [call] = vi.mocked(console.log).mock.calls
-  return call?.[0] as string
+  const calls = vi.mocked(console.log).mock.calls
+  return calls.at(-1)?.[0] as string
 }
 
 const FAILING_AUDIT = audit('render-blocking-resources', {
@@ -25,20 +25,17 @@ describe('logRecommendations', () => {
     vi.spyOn(console, 'log').mockImplementation(noop)
   })
 
-  it('heads the output with the audited URL', () => {
+  it('heads the output with the audited URL, and the label if there is one', () => {
     logRecommendations(
       lhr({ finalDisplayedUrl: 'https://example.com/pricing' }),
       {}
     )
-
     expect(logged()).toContain(
       '───── Lighthouse recommendations — https://example.com/pricing ─────'
     )
-  })
 
-  it('adds the label that tells two runs of one URL apart', () => {
+    // The label is what tells two runs of one URL apart in a single log.
     logRecommendations(lhr(), { label: 'mobile' })
-
     expect(logged()).toContain('Lighthouse recommendations: mobile —')
   })
 

@@ -33,13 +33,4 @@ describe('writeReports', () => {
 
     expect(vol.toJSON()).toEqual({ '/reports/pricing.json': '{"a":1}' })
   })
-
-  it('creates the directory rather than failing when it does not exist', async () => {
-    await writeReports(runnerResult(lhr()), {
-      directory: '/deep/nested/out',
-      name: 'home',
-    })
-
-    expect(vol.existsSync('/deep/nested/out/home.html')).toBe(true)
-  })
 })

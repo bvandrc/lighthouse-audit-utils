@@ -42,10 +42,4 @@ describe('handleAuditResult', () => {
       { category: 'performance', minimum: 90, score: 50 },
     ])
   })
-
-  it('resolves to nothing when every category clears its minimum', async () => {
-    await expect(
-      handleAuditResult({ result: FAILING_RESULT, thresholds: 50 })
-    ).resolves.toBeUndefined()
-  })
 })

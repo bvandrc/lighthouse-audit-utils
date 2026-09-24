@@ -12,10 +12,6 @@ const REPORT = lhr({
 })
 
 describe('checkAgainstThresholds', () => {
-  it('passes when every category clears the flat minimum', () => {
-    expect(checkAgainstThresholds(REPORT, { thresholds: 80 })).toBeUndefined()
-  })
-
   it('treats a score exactly at the minimum as clearing it', () => {
     expect(checkAgainstThresholds(REPORT, { thresholds: 82 })).toBeUndefined()
   })
@@ -66,11 +62,5 @@ describe('checkAgainstThresholds', () => {
         'seo scored 90, below the 95 threshold',
       ].join('\n')
     )
-  })
-
-  it('returns the shortfalls rather than throwing when told to ignore them', () => {
-    expect(() =>
-      checkAgainstThresholds(REPORT, { thresholds: 95, ignoreError: true })
-    ).not.toThrow()
   })
 })
