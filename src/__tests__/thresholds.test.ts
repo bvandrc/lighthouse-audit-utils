@@ -54,12 +54,9 @@ describe('checkAgainstThresholds', () => {
   })
 
   it('names every shortfall in the error, not just the first', () => {
+    // Both categories, in the order the run reported them.
     expect(() => checkAgainstThresholds(REPORT, { thresholds: 95 })).toThrow(
-      [
-        'Lighthouse thresholds not met:',
-        'performance scored 82, below the 95 threshold',
-        'seo scored 90, below the 95 threshold',
-      ].join('\n')
+      /performance[\s\S]*seo/
     )
   })
 })

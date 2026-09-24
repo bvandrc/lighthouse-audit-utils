@@ -1,3 +1,4 @@
+import { keyBy, startCase } from 'es-toolkit'
 import type { RunnerResult } from 'lighthouse'
 
 type Lhr = RunnerResult['lhr']
@@ -24,10 +25,7 @@ export const buildCategory = (
   auditIds: string[] = []
 ): Category => ({
   id,
-  title: id.replace(
-    /(^|-)([a-z])/g,
-    (_, sep, c) => (sep ? ' ' : '') + c.toUpperCase()
-  ),
+  title: startCase(id),
   score,
   auditRefs: auditIds.map((auditId) => ({ id: auditId, weight: 1 })),
 })
@@ -82,8 +80,8 @@ export const buildLighthouseLhr = ({
   finalDisplayedUrl,
   fetchTime: '2026-01-01T00:00:00.000Z',
   lighthouseVersion: '13.0.0',
-  audits: Object.fromEntries(audits.map((a) => [a.id, a])),
-  categories: Object.fromEntries(categories.map((c) => [c.id, c])),
+  audits: keyBy(audits, (a) => a.id),
+  categories: keyBy(categories, (c) => c.id),
   // `output` is the only setting anything here reads, and `ConfigSettings` is
   // `Required<…>` over a field set that moves between Lighthouse majors -- both
   // of which CI runs against. Spelling it out would pin the fixture to one.
