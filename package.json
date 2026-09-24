@@ -82,6 +82,7 @@
     "@types/node": "^24",
     "es-toolkit": "^1",
     "lighthouse": "^13",
+    "memfs": "^4",
     "tsdown": "^0.22",
     "typescript": "^7",
     "vitest": "^4"
