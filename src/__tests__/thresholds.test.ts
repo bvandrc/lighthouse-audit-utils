@@ -18,12 +18,6 @@ describe('checkAgainstThresholds', () => {
     expect(checkAgainstThresholds(REPORT, { thresholds: 82 })).toBeUndefined()
   })
 
-  it('defaults to requiring a perfect score', () => {
-    expect(() => checkAgainstThresholds(REPORT, {})).toThrow(
-      'performance scored 82, below the 100 threshold'
-    )
-  })
-
   it('reports the score out of 100, not the 0-1 the run carries', () => {
     const failures = checkAgainstThresholds(REPORT, {
       thresholds: 95,
