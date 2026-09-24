@@ -5,7 +5,7 @@ type Category = Lhr['categories'][string]
 type Audit = Lhr['audits'][string]
 
 /** Builds an audit result, scored and titled from its id unless overridden. */
-export const audit = (
+export const buildAudit = (
   id: string,
   overrides: Partial<Omit<Audit, 'id'>> = {}
 ): Audit => ({
@@ -18,7 +18,7 @@ export const audit = (
 })
 
 /** Builds a category scoring the given audits, which it references in order. */
-export const category = (
+export const buildCategory = (
   id: string,
   score: number | null,
   auditIds: string[] = []
@@ -43,13 +43,13 @@ type OpportunityDetails = Extract<
 >
 
 /** A table of the offenders an audit found, as most audits carry. */
-export const tableDetails = (
+export const buildTableDetails = (
   headings: TableDetails['headings'],
   items: TableDetails['items']
 ): TableDetails => ({ type: 'table', headings, items })
 
 /** An opportunity, the table variant carrying a byte saving of its own. */
-export const opportunityDetails = (
+export const buildOpportunityDetails = (
   headings: OpportunityDetails['headings'],
   items: OpportunityDetails['items'],
   overallSavingsBytes?: number
@@ -66,7 +66,7 @@ export const opportunityDetails = (
  * Audits passed as a list are keyed by their own id, which is how the real
  * `audits` record relates to the `auditRefs` a category holds.
  */
-export const lhr = ({
+export const buildLighthouseLhr = ({
   categories = [],
   audits = [],
   finalDisplayedUrl = 'https://example.com/',
@@ -105,7 +105,7 @@ export const lhr = ({
  * `report` is positional: `writeReports` pairs each entry with the format at
  * the same index of the run's `output`.
  */
-export const runnerResult = (
+export const buildRunnerResult = (
   result: Lhr,
   report: string | string[] = '<html></html>'
 ): RunnerResult => ({

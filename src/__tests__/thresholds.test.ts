@@ -1,5 +1,5 @@
 import { checkAgainstThresholds } from '../thresholds'
-import { category, lhr } from './__helpers__/lhr-fixtures'
+import { buildCategory, buildLighthouseLhr } from './__helpers__/lhr-fixtures'
 
 const SCORES = {
   performance: 0.82,
@@ -7,8 +7,10 @@ const SCORES = {
   seo: 0.9,
 }
 
-const REPORT = lhr({
-  categories: Object.entries(SCORES).map(([id, score]) => category(id, score)),
+const REPORT = buildLighthouseLhr({
+  categories: Object.entries(SCORES).map(([id, score]) =>
+    buildCategory(id, score)
+  ),
 })
 
 describe('checkAgainstThresholds', () => {
@@ -45,8 +47,11 @@ describe('checkAgainstThresholds', () => {
   })
 
   it('skips a category the run did not score', () => {
-    const report = lhr({
-      categories: [category('performance', null), category('seo', 0.5)],
+    const report = buildLighthouseLhr({
+      categories: [
+        buildCategory('performance', null),
+        buildCategory('seo', 0.5),
+      ],
     })
 
     expect(
