@@ -8,10 +8,9 @@ type AuditDetails = NonNullable<Audit['details']>
 
 /** The audit's metric savings, less the metrics with nothing to save. */
 const resolveMetricSavings = (audit: Audit) =>
-  Object.entries(audit.metricSavings ?? {}).filter(([, ms]) => !!ms) as [
-    string,
-    number,
-  ][]
+  Object.entries(audit.metricSavings ?? {}).filter(
+    (entry): entry is [string, number] => !!entry[1]
+  )
 
 /** CLS savings are a unitless shift score; every other metric is milliseconds. */
 const metricValueType = (metric: string): Details.ItemValueType =>

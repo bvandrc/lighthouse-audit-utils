@@ -83,6 +83,7 @@
     "es-toolkit": "^1",
     "lighthouse": "^13",
     "tsdown": "^0.22",
+    "type-fest": "^5",
     "typescript": "^7",
     "vitest": "^4"
   }
