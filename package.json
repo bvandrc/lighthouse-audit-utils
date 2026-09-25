@@ -32,7 +32,6 @@
   },
   "license": "MIT",
   "type": "module",
-  "sideEffects": false,
   "source": "src/index.ts",
   "exports": {
     ".": {
@@ -49,6 +48,7 @@
     "LICENSE",
     "README.md"
   ],
+  "sideEffects": false,
   "engines": {
     "node": ">=22"
   },
