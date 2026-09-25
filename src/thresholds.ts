@@ -44,8 +44,10 @@ export type ThresholdsArgs = {
 
 /**
  * Checks every category the run scored, throwing an error describing the ones
- * that fell short. Pass `ignoreError` to get those shortfalls back instead, so
- * the caller can log the recommendations before failing.
+ * that fell short.
+ *
+ * Pass `ignoreError` to get those shortfalls back instead, so the caller can
+ * log the recommendations before failing.
  */
 export const checkAgainstThresholds = (
   /** The Lighthouse result object */

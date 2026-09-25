@@ -51,11 +51,11 @@ const formatValue = (
     return String(Math.round(value * 100) / 100)
   }
 
-  // `IcuMessage` is the only object value without a `type` tag.
   const text = (() => {
     if (typeof value === 'string') {
       return value
     }
+    // `IcuMessage` is the only object value without a `type` tag.
     if (!('type' in value)) {
       return ''
     }

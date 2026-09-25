@@ -1,11 +1,11 @@
-import { checkAgainstThresholds } from '../thresholds'
+import { type Category, checkAgainstThresholds } from '../thresholds'
 import { buildCategory, buildLighthouseLhr } from './__helpers__/lhr-fixtures'
 
 const SCORES = {
   performance: 0.82,
   accessibility: 1,
   seo: 0.9,
-}
+} satisfies Partial<Record<Category, number>>
 
 const REPORT = buildLighthouseLhr({
   categories: Object.entries(SCORES).map(([id, score]) =>
@@ -41,7 +41,7 @@ describe('checkAgainstThresholds', () => {
   })
 
   it('skips a category the run did not score', () => {
-    const report = buildLighthouseLhr({
+    const PARTLY_SCORED_REPORT = buildLighthouseLhr({
       categories: [
         buildCategory('performance', null),
         buildCategory('seo', 0.5),
@@ -49,7 +49,10 @@ describe('checkAgainstThresholds', () => {
     })
 
     expect(
-      checkAgainstThresholds(report, { thresholds: 40, ignoreError: true })
+      checkAgainstThresholds(PARTLY_SCORED_REPORT, {
+        thresholds: 40,
+        ignoreError: true,
+      })
     ).toBeUndefined()
   })
 
