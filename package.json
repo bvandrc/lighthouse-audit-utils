@@ -54,7 +54,7 @@
   "packageManager": "pnpm@11.9.0",
   "scripts": {
     "__c0": "====================[ Build & Development ]======================",
-    "prepack": "pnpm build",
+    "prepare": "tsdown",
     "build": "tsdown",
     "start": "tsdown --watch",
     "__c1": "====================[ Linting & Type Checking ]==================",
