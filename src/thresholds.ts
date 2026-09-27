@@ -35,7 +35,9 @@ const thresholdFailureMessage = (failures: ThresholdFailure[]) =>
 export type ThresholdsArgs = {
   /**
    * Minimum category scores (0-100), either per category or one number for all
-   * of them. If per category, any category omitted must score 100.
+   * of them.
+   *
+   * If per category, any category omitted must score 100.
    */
   thresholds?: LighthouseThresholds
   /** Return the failures rather than throwing them. */
@@ -44,8 +46,10 @@ export type ThresholdsArgs = {
 
 /**
  * Checks every category the run scored, throwing an error describing the ones
- * that fell short. Pass `ignoreError` to get those shortfalls back instead, so
- * the caller can log the recommendations before failing.
+ * that fell short.
+ *
+ * Pass `ignoreError` to get those shortfalls back instead, so the caller can
+ * log the recommendations before failing.
  */
 export const checkAgainstThresholds = (
   /** The Lighthouse result object */
