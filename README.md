@@ -224,10 +224,11 @@ await runAudit({
 
 ```bash
 pnpm install
-pnpm build       # tsup → dist/ (types via tsc)
-pnpm start       # tsup watch
+pnpm build       # tsdown → dist/, declarations included
+pnpm start       # tsdown watch
 pnpm check       # biome + tsc
 pnpm format      # biome check --fix
+pnpm test        # vitest
 ```
 
 CI type-checks and builds against both supported peer majors, Lighthouse 12 and 13, on Node 22/24/26.
