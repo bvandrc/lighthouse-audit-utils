@@ -11,6 +11,7 @@ Conventions live outside this file, synced from https://github.com/bvandrc/bvand
 
 @conventions/typescript.md — language-level TypeScript/JavaScript rules
 @conventions/playwright.md — test layout, test IDs, and accessibility scans
+@conventions/ts-unit-testing.md — TypeScript unit test layout, naming, fixtures, and assertions
 @conventions/all.md — practice for every repo: branches, formatting, markdown, PR reviews
 
 ## Commands
