@@ -14,6 +14,7 @@ Conventions live outside this file, synced from https://github.com/bvandrc/bvand
 @conventions/playwright.md — test layout, test IDs, and accessibility scans
 @conventions/ts-unit-testing.md — TypeScript unit test layout, naming, fixtures, and assertions
 @conventions/all.md — practice for every repo: branches, formatting, markdown, PR reviews
+@conventions/npm-publishing.md — releasing, trusted publishing, `package.json` publish fields, versioning
 
 ## Commands
 
