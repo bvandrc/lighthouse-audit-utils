@@ -52,7 +52,7 @@
   "engines": {
     "node": ">=22"
   },
-  "packageManager": "pnpm@11.9.0",
+  "packageManager": "pnpm@12.15.0",
   "publishConfig": {
     "access": "public",
     "provenance": true
@@ -88,9 +88,9 @@
     "@types/node": "^24",
     "es-toolkit": "^1",
     "lighthouse": "^13",
-    "tsdown": "^0.22",
+    "tsdown": "^0.23",
     "type-fest": "^5",
     "typescript": "^7",
-    "vitest": "^4"
+    "vitest": "^5"
   }
 }
