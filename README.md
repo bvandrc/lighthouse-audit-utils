@@ -29,11 +29,11 @@ await runAudit({
 
 `lighthouseArgs` is handed to `lighthouse()`, in the order it takes them:
 
-| Option   | Default    | Description                                           |
-| -------- | ---------- | ----------------------------------------------------- |
-| `url`    | _required_ | The URL to audit                                      |
-| `flags`  | _none_     | Settings for the run, e.g. the `port` Lighthouse uses |
-| `config` | _none_     | Overrides the default config, e.g. `desktopConfig`    |
+| Option | Default | Description |
+| --- | --- | --- |
+| `url` | _required_ | The URL to audit |
+| `flags` | _none_ | Settings for the run, e.g. the `port` Lighthouse uses |
+| `config` | _none_ | Overrides the default config, e.g. `desktopConfig` |
 
 Everything else it takes is passed straight to `handleAuditResult` below, which returns `{ result, failures }`.
 
@@ -57,13 +57,13 @@ await handleAuditResult({
 
 The three steps run in that order — reports, recommendations, thresholds — so a failing run still prints its recommendations before throwing.
 
-| Option            | Default    | Description                                                  |
-| ----------------- | ---------- | ------------------------------------------------------------ |
-| `result`          | _required_ | The full `RunnerResult` from a Lighthouse run                |
-| `reports`         | _none_     | Where to write the reports; omit to skip writing them        |
-| `recommendations` | _none_     | Recommendation logging options, or `false` to skip           |
-| `thresholds`      | `100`      | Minimum scores (0-100) — one number for all, or per category |
-| `ignoreError`     | `false`    | Return the threshold failures rather than throwing on them   |
+| Option | Default | Description |
+| --- | --- | --- |
+| `result` | _required_ | The full `RunnerResult` from a Lighthouse run |
+| `reports` | _none_ | Where to write the reports; omit to skip writing them |
+| `recommendations` | _none_ | Recommendation logging options, or `false` to skip |
+| `thresholds` | `100` | Minimum scores (0-100) — one number for all, or per category |
+| `ignoreError` | `false` | Return the threshold failures rather than throwing on them |
 
 ```ts
 // just the log
@@ -75,10 +75,10 @@ await handleAuditResult({ result, recommendations: false })
 
 ### `reports`
 
-| Option      | Default    | Description                                                    |
-| ----------- | ---------- | -------------------------------------------------------------- |
-| `directory` | _required_ | Directory to write into; created if it doesn't exist           |
-| `name`      | _required_ | Base filename, e.g. `desktop` → `desktop.html`, `desktop.json` |
+| Option | Default | Description |
+| --- | --- | --- |
+| `directory` | _required_ | Directory to write into; created if it doesn't exist |
+| `name` | _required_ | Base filename, e.g. `desktop` → `desktop.html`, `desktop.json` |
 
 Each report is written to `<directory>/<name>.<format>`, using the formats the run's `output` flag asked for.
 
@@ -100,11 +100,11 @@ Returns the threshold failures instead of throwing an error, so you can decide w
 
 ### `recommendations`
 
-| Option           | Default        | Description                                                    |
-| ---------------- | -------------- | -------------------------------------------------------------- |
-| `label`          | `reports.name` | Distinguishes runs of the same URL, e.g. `desktop`/`mobile`    |
-| `maxItems`       | `5`            | Rows shown per audit before collapsing to "…and N more"        |
-| `maxValueLength` | `120`          | Max length of a single value before it's truncated with an "…" |
+| Option | Default | Description |
+| --- | --- | --- |
+| `label` | `reports.name` | Distinguishes runs of the same URL, e.g. `desktop`/`mobile` |
+| `maxItems` | `5` | Rows shown per audit before collapsing to "…and N more" |
+| `maxValueLength` | `120` | Max length of a single value before it's truncated with an "…" |
 
 Pass `recommendations: false` to skip the log entirely.
 
@@ -180,12 +180,12 @@ lighthouseTest('home page', async ({ page, runAudit }) => {
 - Run `runAudit` more than once for more than one form factor — wrap the calls in `test.step` if you want them grouped in the report.
 - `withLighthouse(options, test)` takes the test to extend second, so you can layer it onto your own fixtures; omit it to start from Playwright's `test`.
 
-| Option           | Required | Description                                                                              |
-| ---------------- | -------- | ---------------------------------------------------------------------------------------- |
-| `basePort`       | yes      | First worker's CDP port; each further worker gets the next one up                        |
-| `lighthouseArgs` | no       | `flags` and `config` for `lighthouse()`; `url` and `flags.port` are set for you          |
-| `reports`        | no       | `(context) => { directory, name }`, or `false` to skip writing them                      |
-| `launchOptions`  | no       | Merged into the persistent context launch, which already sets the CDP port and `baseURL` |
+| Option | Required | Description |
+| --- | --- | --- |
+| `basePort` | yes | First worker's CDP port; each further worker gets the next one up |
+| `lighthouseArgs` | no | `flags` and `config` for `lighthouse()`; `url` and `flags.port` are set for you |
+| `reports` | no | `(context) => { directory, name }`, or `false` to skip writing them |
+| `launchOptions` | no | Merged into the persistent context launch, which already sets the CDP port and `baseURL` |
 
 Plus everything [`runAudit`](#usage) from `lighthouse-audit-utils` takes — `thresholds`, `ignoreError`, `recommendations`.
 
