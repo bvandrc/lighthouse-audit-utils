@@ -5,7 +5,7 @@
     "includes": [
       "**",
       "!!conventions",
-      "!**/coverage",
+      "!!**/coverage",
       "!**/dist",
       "!**/node_modules"
     ]
