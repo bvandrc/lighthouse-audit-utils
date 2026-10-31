@@ -32,7 +32,10 @@
     "strictPropertyInitialization": false,
     "stripInternal": true,
     "useDefineForClassFields": true,
-    "verbatimModuleSyntax": false
+    "verbatimModuleSyntax": false,
+    "paths": {
+      "@/*": ["./src/*"]
+    }
   },
   "include": ["./src", "./*.ts"]
 }

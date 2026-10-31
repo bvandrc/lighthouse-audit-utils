@@ -1,5 +1,5 @@
+import { typedEntries } from '@/utils'
 import { type Category, checkAgainstThresholds } from '../thresholds'
-import { typedEntries } from '../utils'
 import { buildCategory, buildLighthouseLhr } from './__helpers__/lhr-fixtures'
 
 const SCORES = {
