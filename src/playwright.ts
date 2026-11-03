@@ -27,9 +27,10 @@ export type RunAuditOptions = {
 /** Settable per fixture and again per `runAudit` call, the later one winning. */
 type AuditOverrides = {
   /**
-   * - Passed to `lighthouse()`, minus the `url` — that's whatever page the test
-   *   is on.
-   * - `flags` merge over the worker's `port`, the only one set for you
+   * Passed to `lighthouse()`, minus the `url` — that's whatever page the test
+   * is on.
+   *
+   * - `flags` merge over the worker's `port`, the only one set for you.
    * - `config` deep merges, so `settings` layer rather than replacing each other.
    * - Config arrays merge by index, so list settings like `skipAudits` are best
    *   set at one level only.
@@ -39,8 +40,10 @@ type AuditOverrides = {
 
 export type LighthouseFixtures = {
   /**
-   * Runs one Lighthouse audit against the current page. Call it again for a
-   * second form factor, passing that form factor's `config` and `name`.
+   * Runs one Lighthouse audit against the current page.
+   *
+   * Call it again for a second form factor, passing that form factor's
+   * `config` and `name`.
    */
   runAudit: (options?: RunAuditOptions) => ReturnType<typeof runLighthouse>
 }

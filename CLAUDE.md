@@ -9,9 +9,12 @@
 
 Conventions live outside this file, synced from https://github.com/bvandrc/bvandrc-conventions — follow all of them:
 
-@conventions/typescript.md — language-level TypeScript/JavaScript rules
-@conventions/playwright.md — test layout, test IDs, and accessibility scans
-@conventions/all.md — practice for every repo: branches, formatting, markdown, PR reviews
+- @conventions/typescript.md — language-level TypeScript/JavaScript rules
+- @conventions/ts-testing-all.md — testing rules shared by every TypeScript suite: test IDs, naming, assertions
+- @conventions/playwright.md — test layout, test IDs, and accessibility scans
+- @conventions/ts-unit-testing.md — TypeScript unit test layout, naming, fixtures, and assertions
+- @conventions/all.md — practice for every repo: branches, formatting, writing, PR reviews
+- @conventions/npm-publishing.md — releasing, trusted publishing, `package.json` publish fields, versioning
 
 ## Commands
 
@@ -22,4 +25,5 @@ Conventions live outside this file, synced from https://github.com/bvandrc/bvand
 ## Repo conventions
 
 - **Package manager**: pnpm. `npm install` writes a competing `package-lock.json` that CI ignores.
+- **Typed `Object` walks**: `typedKeys`, `typedEntries`, and `typedFromEntries`, exported from `src/utils/index.ts`, are ours. They are the builtins with the cast a call site would otherwise write by hand, so reach for one instead of asserting the result -- and leave `Object.keys`/`entries`/`fromEntries` alone where the widened type is what's wanted.
 - **Convention files**: `conventions/` is synced from https://github.com/bvandrc/bvandrc-conventions by `.github/workflows/sync-conventions.yml` and overwritten on every sync. Edit a rule upstream, never in that directory.
