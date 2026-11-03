@@ -1,5 +1,6 @@
+import { objectEntries } from 'ts-extras'
+
 import { type Category, checkAgainstThresholds } from '../thresholds'
-import { typedEntries } from '../utils'
 import { buildCategory, buildLighthouseLhr } from './__helpers__/lhr-fixtures'
 
 const SCORES = {
@@ -9,7 +10,7 @@ const SCORES = {
 } satisfies Partial<Record<Category, number>>
 
 const REPORT = buildLighthouseLhr({
-  categories: typedEntries(SCORES).map(([id, score]) =>
+  categories: objectEntries(SCORES).map(([id, score]) =>
     buildCategory(id, score)
   ),
 })
