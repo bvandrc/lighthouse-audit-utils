@@ -10,10 +10,7 @@ import {
 } from './__helpers__/lhr-fixtures'
 
 /** The last string `logRecommendations` printed, as the terminal would show it. */
-const logged = () => {
-  const calls = vi.mocked(console.log).mock.calls
-  return calls.at(-1)?.[0] as string
-}
+const getLastLog = (): string => vi.mocked(console.log).mock.calls.at(-1)?.[0]
 
 const FAILING_AUDIT = buildAudit('render-blocking-resources', {
   title: 'Eliminate render-blocking resources',
@@ -30,13 +27,13 @@ describe('logRecommendations', () => {
       buildLighthouseLhr({ finalDisplayedUrl: 'https://example.com/pricing' }),
       {}
     )
-    expect(logged()).toContain(
+    expect(getLastLog()).toContain(
       '───── Lighthouse recommendations — https://example.com/pricing ─────'
     )
 
     // The label is what tells two runs of one URL apart in a single log.
     logRecommendations(buildLighthouseLhr(), { label: 'mobile' })
-    expect(logged()).toContain('Lighthouse recommendations: mobile —')
+    expect(getLastLog()).toContain('Lighthouse recommendations: mobile —')
   })
 
   it('says so rather than going quiet when a category has nothing failing', () => {
@@ -48,7 +45,7 @@ describe('logRecommendations', () => {
       {}
     )
 
-    expect(logged()).toContain('Seo: 100 — nothing to flag')
+    expect(getLastLog()).toContain('Seo: 100 — nothing to flag')
   })
 
   it("reports a category's score, and N/A where it has none", () => {
@@ -57,7 +54,7 @@ describe('logRecommendations', () => {
       {}
     )
 
-    expect(logged()).toContain('Performance: N/A')
+    expect(getLastLog()).toContain('Performance: N/A')
   })
 
   it('lists an audit under its title, id, and score', () => {
@@ -69,8 +66,8 @@ describe('logRecommendations', () => {
       {}
     )
 
-    expect(logged()).toContain('  • Eliminate render-blocking resources')
-    expect(logged()).toContain('      render-blocking-resources · score 30')
+    expect(getLastLog()).toContain('  • Eliminate render-blocking resources')
+    expect(getLastLog()).toContain('      render-blocking-resources · score 30')
   })
 
   it('leaves out the audits that passed, and the ones with no score to fail', () => {
@@ -97,9 +94,9 @@ describe('logRecommendations', () => {
       {}
     )
 
-    expect(logged()).toContain('Failed audit')
+    expect(getLastLog()).toContain('Failed audit')
     for (const absent of ['Passed audit', 'Informative audit']) {
-      expect(logged(), absent).not.toContain(absent)
+      expect(getLastLog(), absent).not.toContain(absent)
     }
   })
 
@@ -115,8 +112,8 @@ describe('logRecommendations', () => {
       {}
     )
 
-    expect(logged().indexOf('Audit large')).toBeLessThan(
-      logged().indexOf('Audit small')
+    expect(getLastLog().indexOf('Audit large')).toBeLessThan(
+      getLastLog().indexOf('Audit small')
     )
   })
 
@@ -135,7 +132,7 @@ describe('logRecommendations', () => {
       {}
     )
 
-    expect(logged()).toContain('est. savings: LCP 1235 ms, CLS 0.25')
+    expect(getLastLog()).toContain('est. savings: LCP 1235 ms, CLS 0.25')
   })
 
   it("falls back to an opportunity's overall byte saving", () => {
@@ -156,7 +153,7 @@ describe('logRecommendations', () => {
       {}
     )
 
-    expect(logged()).toContain('est. savings: 50 KiB')
+    expect(getLastLog()).toContain('est. savings: 50 KiB')
   })
 
   it("does not repeat savings the audit's own display value already gives", () => {
@@ -174,8 +171,8 @@ describe('logRecommendations', () => {
       {}
     )
 
-    expect(logged()).toContain('(Potential savings of 40 KiB)')
-    expect(logged()).not.toContain('est. savings')
+    expect(getLastLog()).toContain('(Potential savings of 40 KiB)')
+    expect(getLastLog()).not.toContain('est. savings')
   })
 
   it("lists an audit's offenders with each measure column labelled", () => {
@@ -206,10 +203,10 @@ describe('logRecommendations', () => {
       {}
     )
 
-    expect(logged()).toContain(
+    expect(getLastLog()).toContain(
       '        - https://example.com/hero.png  ·  Savings: 200 KiB'
     )
-    expect(logged()).not.toContain('ignored')
+    expect(getLastLog()).not.toContain('ignored')
   })
 
   it('keeps a decimal on sub-KiB savings so they do not read as 0 KiB', () => {
@@ -232,7 +229,7 @@ describe('logRecommendations', () => {
       {}
     )
 
-    expect(logged()).toContain('Savings: 0.3 KiB')
+    expect(getLastLog()).toContain('Savings: 0.3 KiB')
   })
 
   it('collapses the offenders past `maxItems` into a count', () => {
@@ -254,9 +251,9 @@ describe('logRecommendations', () => {
       { maxItems: 2 }
     )
 
-    expect(logged()).toContain('https://example.com/1.js')
-    expect(logged()).not.toContain('https://example.com/2.js')
-    expect(logged()).toContain('        - …and 5 more')
+    expect(getLastLog()).toContain('https://example.com/1.js')
+    expect(getLastLog()).not.toContain('https://example.com/2.js')
+    expect(getLastLog()).toContain('        - …and 5 more')
   })
 
   it('flattens a node label onto one line and truncates it', () => {
@@ -283,6 +280,6 @@ describe('logRecommendations', () => {
       { maxValueLength: 12 }
     )
 
-    expect(logged()).toContain('        - Buy now, whi…')
+    expect(getLastLog()).toContain('        - Buy now, whi…')
   })
 })

@@ -1,4 +1,5 @@
 import { noop } from 'es-toolkit'
+import { vol } from 'memfs'
 
 import { handleAuditResult } from '../handle-audit-result'
 import {
@@ -11,9 +12,40 @@ const FAILING_RESULT = buildRunnerResult(
   buildLighthouseLhr({ categories: [buildCategory('performance', 0.5)] })
 )
 
+vi.mock('node:fs/promises', async () => {
+  const { fs } = await import('memfs')
+  return { ...fs.promises, default: fs.promises }
+})
+
+/** The last string `handleAuditResult` printed, as the terminal would show it. */
+const getLastLog = (): string => vi.mocked(console.log).mock.calls.at(-1)?.[0]
+
 describe('handleAuditResult', () => {
   beforeEach(() => {
+    vol.reset()
     vi.spyOn(console, 'log').mockImplementation(noop)
+  })
+
+  it('writes the reports, and labels the log with their name', async () => {
+    await handleAuditResult({
+      result: FAILING_RESULT,
+      thresholds: 10,
+      reports: { directory: '/out', name: 'home' },
+    })
+
+    expect(Object.keys(vol.toJSON())).toEqual(['/out/home.html'])
+    expect(getLastLog()).toContain('Lighthouse recommendations: home —')
+  })
+
+  it("prefers the recommendations' own label to the reports' name", async () => {
+    await handleAuditResult({
+      result: FAILING_RESULT,
+      thresholds: 10,
+      reports: { directory: '/out', name: 'home' },
+      recommendations: { label: 'home, mobile' },
+    })
+
+    expect(getLastLog()).toContain('Lighthouse recommendations: home, mobile —')
   })
 
   it('logs the recommendations before the thresholds throw', async () => {
