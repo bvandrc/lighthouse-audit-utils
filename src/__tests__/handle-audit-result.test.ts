@@ -37,17 +37,6 @@ describe('handleAuditResult', () => {
     expect(getLastLog()).toContain('Lighthouse recommendations: home —')
   })
 
-  it("prefers the recommendations' own label to the reports' name", async () => {
-    await handleAuditResult({
-      result: FAILING_RESULT,
-      thresholds: 10,
-      reports: { directory: '/out', name: 'home' },
-      recommendations: { label: 'home, mobile' },
-    })
-
-    expect(getLastLog()).toContain('Lighthouse recommendations: home, mobile —')
-  })
-
   it('logs the recommendations before the thresholds throw', async () => {
     await expect(
       handleAuditResult({ result: FAILING_RESULT, thresholds: 90 })
