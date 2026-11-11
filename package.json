@@ -88,7 +88,7 @@
     "@types/node": "^24",
     "es-toolkit": "^1",
     "lighthouse": "^13",
-    "ts-extras": "^1",
+    "ts-extras": "^2",
     "tsdown": "^0.23",
     "type-fest": "^5",
     "typescript": "^7",
