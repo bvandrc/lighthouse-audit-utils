@@ -1,6 +1,7 @@
 import { compact, orderBy } from 'es-toolkit'
 import type { RunnerResult } from 'lighthouse'
 import type Details from 'lighthouse/types/lhr/audit-details'
+import { arrayIncludes, objectEntries } from 'ts-extras'
 
 type Lhr = RunnerResult['lhr']
 type Audit = Lhr['audits'][string]
@@ -8,7 +9,7 @@ type AuditDetails = NonNullable<Audit['details']>
 
 /** The audit's metric savings, less the metrics with nothing to save. */
 const resolveMetricSavings = (audit: Audit) =>
-  Object.entries(audit.metricSavings ?? {}).filter(
+  objectEntries(audit.metricSavings ?? {}).filter(
     (entry): entry is [string, number] => !!entry[1]
   )
 
@@ -113,7 +114,7 @@ const formatItems = (
     const columns = [
       formatValue(item[identity.key ?? ''], identity.valueType, maxValueLength),
       ...measures
-        .filter(({ valueType }) => MEASURE_TYPES.includes(valueType))
+        .filter(({ valueType }) => arrayIncludes(MEASURE_TYPES, valueType))
         .map(
           (heading) =>
             `${heading.label}: ${formatValue(item[heading.key ?? ''], heading.valueType, maxValueLength)}`
